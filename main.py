@@ -1,10 +1,13 @@
+
 from functions import *
 
+# 1. Extraire les noms des présidents à partir des noms des fichiers texte fournis
 directory = "./speeches"
 files_list = list_of_files(directory, ".txt")
-print(files_list)
+print("Liste des fichiers :", files_list)
 print()
 
+# 2. Associer à chaque président un prénom
 fichiers = [
     "Nomination_Chirac1.txt",
     "Nomination_Chirac2.txt",
@@ -20,6 +23,7 @@ for fichier in fichiers:
     nom_president = extraire_nom_president(fichier)
     print(f"Nom du président dans '{fichier}': {nom_president}")
 
+# 3. Afficher la liste des noms des présidents (attention aux doublons)
 noms_presidents = [
     "Chirac",
     "Giscard dEstaing",
@@ -29,35 +33,13 @@ noms_presidents = [
     "Sarkozy"
 ]
 
-for nom_president in noms_presidents:
-    prenom = associer_prenom_a_president(nom_president)
-    print(f"Prénom associé à {nom_president}: {prenom}")
-
-noms_presidents = [
-    "Chirac",
-    "Giscard dEstaing",
-    "Hollande",
-    "Macron",
-    "Mitterrand",
-    "Sarkozy"
-]
-
-liste_prenom_nom_presidents = creer_liste_prenom_nom_presidents(noms_presidents)
+# Créer la liste des prénoms et noms de famille formatés
+liste_prenom_nom_presidents = creer_liste_prenom_nom_formattee(noms_presidents)
 
 # Afficher la liste résultante
-for prenom, nom in liste_prenom_nom_presidents:
-    print(f"Prénom: {prenom}, Nom: {nom}")
+print("Liste des noms des présidents (formatée) :")
+for nom_formatte in liste_prenom_nom_presidents:
+    print(nom_formatte)
 
-noms_presidents = [
-    "Chirac",
-    "Giscard dEstaing",
-    "Hollande",
-    "Macron",
-    "Mitterrand",
-    "Sarkozy"
-]
-
-liste_prenom_nom_formattee = creer_liste_prenom_nom_formattee(noms_presidents)
-
-# Afficher la liste résultante
-print(liste_prenom_nom_formattee)
+# 4. Convertir les fichiers en minuscules et les stocker dans le dossier "cleaned"
+convertir_textes_en_minuscules(fichiers, "cleaned")
