@@ -117,6 +117,11 @@ def creer_liste_prenom_nom_formattee(noms_presidents):
 
     return liste_prenom_nom_formattee
 
+
+import os
+
+# ... (autres fonctions inchangées)
+
 def convertir_textes_en_minuscules(fichiers_sources, dossier_destination):
     """
     Convertit les textes des fichiers sources en minuscules et les stocke dans des nouveaux fichiers dans le dossier de destination.
@@ -129,24 +134,31 @@ def convertir_textes_en_minuscules(fichiers_sources, dossier_destination):
         None.
     """
 
+    # Récupérer le chemin absolu du dossier "speeches"
+    speeches_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), "speeches")
+
     # Créer le dossier de destination s'il n'existe pas
-    if not os.path.exists(dossier_destination):
-        os.mkdir(dossier_destination)
+    chemin_dossier_destination = os.path.join(os.path.dirname(os.path.abspath(__file__)), dossier_destination)
+    if not os.path.exists(chemin_dossier_destination):
+        os.mkdir(chemin_dossier_destination)
 
     # Parcourir les fichiers sources
     for fichier_source in fichiers_sources:
+        # Construire le chemin complet du fichier source
+        chemin_complet_source = os.path.join(speeches_directory, fichier_source)
+
         # Lire le contenu du fichier
-        with open(fichier_source, "r", encoding="utf-8") as f:
+        with open(chemin_complet_source, "r", encoding="utf-8") as f:
             text = f.read()
 
         # Convertir le texte en minuscules
         text_minuscule = text.lower()
 
-        # Créer le nom du fichier de destination
-        fichier_destination = os.path.join(dossier_destination, os.path.basename(fichier_source))
+        # Construire le chemin complet du fichier de destination
+        chemin_complet_destination = os.path.join(os.path.dirname(os.path.abspath(__file__)), dossier_destination, fichier_source)
 
         # Écrire le texte en minuscules dans le fichier de destination
-        with open(fichier_destination, "w", encoding="utf-8") as f:
+        with open(chemin_complet_destination, "w", encoding="utf-8") as f:
             f.write(text_minuscule)
 
     print("Les textes ont été convertis en minuscules et stockés dans le dossier 'cleaned'.")

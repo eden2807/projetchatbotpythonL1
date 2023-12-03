@@ -13,10 +13,10 @@ fichiers = [
     "Nomination_Chirac2.txt",
     "Nomination_Giscard dEstaing.txt",
     "Nomination_Hollande.txt",
-    "Nomination_Macron(1).txt",
+    "Nomination_Macron.txt",
     "Nomination_Mitterrand1.txt",
     "Nomination_Mitterrand2.txt",
-    "Nomination_Sarkozy(1).txt"
+    "Nomination_Sarkozy.txt"
 ]
 
 for fichier in fichiers:
