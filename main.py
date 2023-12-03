@@ -42,4 +42,6 @@ for nom_formatte in liste_prenom_nom_presidents:
     print(nom_formatte)
 
 # 4. Convertir les fichiers en minuscules et les stocker dans le dossier "cleaned"
+dossier_cleaned = "cleaned"
 convertir_textes_en_minuscules(fichiers, "cleaned")
+nettoyer_textes(dossier_cleaned, dossier_cleaned)
