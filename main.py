@@ -16,12 +16,7 @@ for fichier in fichiers:
     print(f"Nom du président dans '{fichier}': {nom_president}")
 
 # Créer la liste des prénoms et noms de famille formatés
-liste_prenom_nom_presidents = creer_liste_prenom_nom_formattee(noms_presidents)
-
-# Afficher la liste résultante
-print("Liste des noms des présidents (formatée) :")
-for nom_formatte in liste_prenom_nom_presidents:
-    print(nom_formatte)
+liste_prenom_nom_presidents = creer_liste_prenom_nom_formates(noms_presidents)
 
 # 4. Convertir les fichiers en minuscules et les stocker dans le dossier "cleaned"
 dossier_cleaned = "cleaned"

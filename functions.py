@@ -97,7 +97,7 @@ def afficher_liste_presidents(noms_presidents):
 
     return liste_prenom_nom_formattee'''
 
-def creer_liste_prenom_nom_formattee(noms_presidents):
+def creer_liste_prenom_nom_formates(noms_presidents):
     prenoms = {
         "Chirac": "Jacques",
         "Giscard dEstaing": "Valéry",
@@ -105,7 +105,7 @@ def creer_liste_prenom_nom_formattee(noms_presidents):
         "Macron": "Emmanuel",
         "Mitterrand": "François",
         "Sarkozy": "Nicolas"
-        # Ajoutez d'autres présidents au besoin
+
     }
 
     liste_prenom_nom_formattee = []
