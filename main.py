@@ -1,37 +1,19 @@
 
 from functions import *
 
-# 1. Extraire les noms des présidents à partir des noms des fichiers texte fournis
-directory = "./speeches"
-files_list = list_of_files(directory, ".txt")
-print("Liste des fichiers :", files_list)
+# Extraire les noms des présidents à partir des noms des fichiers texte fournis
+noms_presidents = []
+directory = "./Speeches"
+fichiers = list_of_files(directory, ".txt")
+# Debug uniquement, penser à supprimer
+print("Liste des fichiers :", fichiers)
 print()
 
-# 2. Associer à chaque président un prénom
-fichiers = [
-    "Nomination_Chirac1.txt",
-    "Nomination_Chirac2.txt",
-    "Nomination_Giscard dEstaing.txt",
-    "Nomination_Hollande.txt",
-    "Nomination_Macron.txt",
-    "Nomination_Mitterrand1.txt",
-    "Nomination_Mitterrand2.txt",
-    "Nomination_Sarkozy.txt"
-]
-
+# Extraire le nom de chaque président
 for fichier in fichiers:
     nom_president = extraire_nom_president(fichier)
+    noms_presidents.append(nom_president)
     print(f"Nom du président dans '{fichier}': {nom_president}")
-
-# 3. Afficher la liste des noms des présidents (attention aux doublons)
-noms_presidents = [
-    "Chirac",
-    "Giscard dEstaing",
-    "Hollande",
-    "Macron",
-    "Mitterrand",
-    "Sarkozy"
-]
 
 # Créer la liste des prénoms et noms de famille formatés
 liste_prenom_nom_presidents = creer_liste_prenom_nom_formattee(noms_presidents)
