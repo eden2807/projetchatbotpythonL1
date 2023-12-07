@@ -228,8 +228,3 @@ def dico_chaine_de_caractere(mot):
 
         return compteur_mots
 
-    # Exemple d'utilisation
-    chaine_test = "Le chat est sur le toit, le chat est noir. Le chien est dans la cour."
-    resultat = compter_mots(chaine_test)
-
-    print("Résultat du comptage des mots :", resultat)
