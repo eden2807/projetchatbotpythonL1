@@ -216,7 +216,7 @@ def nettoyer_textes(dossier_source, dossier_destination):
 
     print("Les textes ont été nettoyés et stockés dans le dossier 'cleaned'.")
 def dico_chaine_de_caractere(mot):
-    def compter_mots(chaine):
+    def calculer_tf(chaine):
         mots = chaine.split()  # Divise la chaîne en une liste de mots
         compteur_mots = {}
 
@@ -226,5 +226,12 @@ def dico_chaine_de_caractere(mot):
             if mot:
                 compteur_mots[mot] = compteur_mots.get(mot, 0) + 1
 
-        return compteur_mots
+        # Calculer la fréquence du terme (TF) pour chaque mot
+        total_mots = len(mots)
+        tf = {mot: occurences / total_mots for mot, occurences in compteur_mots.items()}
+
+        return tf
+
+
+
 
