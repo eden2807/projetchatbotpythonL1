@@ -1,5 +1,6 @@
-
-from functions import *
+import os
+from FilesManager import *
+from functions import extraire_nom_president
 
 # Extraire les noms des présidents à partir des noms des fichiers texte fournis
 noms_presidents = []
