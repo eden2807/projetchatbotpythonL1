@@ -6,6 +6,9 @@ def list_of_files(directory, extension):
             files_names.append(filename)
     return files_names
 
+# A implémenter eventuellement:
+#OuvrirFichier
+#EnregistrerFichier
 
 '''def extraire_nom_president(nom_fichier):
     nom_fichier = nom_fichier.replace("Nomination_", "").replace(".txt", "")

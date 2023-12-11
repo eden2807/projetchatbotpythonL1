@@ -1,6 +1,4 @@
 import os
-
-
 def extraire_nom_president(nom_fichier):
     nom_fichier = nom_fichier.replace("Nomination_", "").replace(".txt", "")
 
@@ -18,8 +16,6 @@ def extraire_nom_president(nom_fichier):
     nom_president = ''.join([char for char in nom_president if not char.isdigit()])
 
     return nom_president
-
-
 
 def associer_prenom_a_president(nom_president):
     prenoms = {
@@ -77,27 +73,6 @@ def afficher_liste_presidents(noms_presidents):
         liste_prenom_nom_formattee.append(nom_formatte)
 
     return liste_prenom_nom_formattee'''
-
-def creer_liste_prenom_nom_formates(noms_presidents):
-    prenoms = {
-        "Chirac": "Jacques",
-        "Giscard dEstaing": "Valéry",
-        "Hollande": "François",
-        "Macron": "Emmanuel",
-        "Mitterrand": "François",
-        "Sarkozy": "Nicolas"
-
-    }
-
-    liste_prenom_nom_formattee = []
-
-    # Utilisons la fonction items() pour parcourir à la fois le nom de famille et le prénom
-    for nom_famille, prenom in prenoms.items():
-        nom_formatte = f"{prenom} {nom_famille}"
-        liste_prenom_nom_formattee.append(nom_formatte)
-
-    return liste_prenom_nom_formattee
-
 
 import os
 

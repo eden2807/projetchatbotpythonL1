@@ -1,10 +1,11 @@
 import os
 from FilesManager import *
-from functions import extraire_nom_president
+from functions import *
+from Presidents import *
 
 # Extraire les noms des présidents à partir des noms des fichiers texte fournis
 noms_presidents = []
-directory = "./Speeches"
+directory = "./speeches"
 fichiers = list_of_files(directory, ".txt")
 # Debug uniquement, penser à supprimer
 print("Liste des fichiers :", fichiers)
