@@ -28,7 +28,7 @@ def calculer_idf(corpus_directory):
         if filename.endswith(".txt"):
             with open(os.path.join(corpus_directory, filename), 'r', encoding='utf-8') as file:
                 document = file.read()
-                mots = set(document.split())  # Utilisation d'un ensemble pour obtenir les mots uniques dans le document
+                mots = set(document.split())  # Utilisation d'un  ensemble pour obtenir les mots uniques dans le document
                 mots_par_document[filename] = mots
                 total_documents += 1
 

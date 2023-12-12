@@ -1,6 +1,20 @@
 from FilesManager import *
 from Presidents import *
 from StringManager import *
+from TF_IDF import CompterOccurenceMots
+
+################################################################################
+# Zone de debug temp
+
+# A faire:
+# 1) Trouver comment la fonction split trie les mots par défaut (Random ?, autre ?...)
+# 2) Trouver comment specifier son propre ordre (Ordre des mots dans la cgaine, ordre alpha-numérique, etc.)
+
+document = "Bonjour je suis un exemple je vais servir d'exemple à proprement parler"
+
+mots = CompterOccurenceMots(document)
+
+################################################################################
 
 # Extraire les noms des présidents à partir des noms des fichiers texte fournis
 noms_presidents = []
