@@ -3,7 +3,7 @@ from Presidents import *
 from StringManager import *
 from TF_IDF import CompterOccurenceMots
 
-################################################################################
+###############################################################################
 # Zone de debug temp
 
 # A faire:
