@@ -1,6 +1,6 @@
 
 def CompterOccurenceMots(document):
-    mots = set(document.split())
+    mots = document.split()
     return mots
     #Mon test
     #mots_par_document[filename] = mots

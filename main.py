@@ -8,7 +8,13 @@ from TF_IDF import CompterOccurenceMots
 
 # A faire:
 # 1) Trouver comment la fonction split trie les mots par défaut (Random ?, autre ?...)
+#Réponse : J'ai enlevé set, il n'était pas trés utile. Pour avoir une liste des mots dans l'ordre du texte, il suffit de laisser .split
+#set fait cela de manière aléatoire
 # 2) Trouver comment specifier son propre ordre (Ordre des mots dans la cgaine, ordre alpha-numérique, etc.)
+#Pour pas mal d'ordre voulu, il faut crée soit même sa condition (la codé) mais il existe une autre fonction pour trier rapidement par ordre alphabétique par exemple qui se nomme .sorted
+#Pour le moment, .split semble nous suffir
+
+
 
 document = "Bonjour je suis un exemple je vais servir d'exemple à proprement parler"
 
