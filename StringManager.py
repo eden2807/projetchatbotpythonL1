@@ -40,21 +40,15 @@ def ConvertirTextesEnMinuscules(fichiers_sources, dossier_destination):
             f.write(text_minuscule)
 
         print("Les textes ont été convertis en minuscules et stockés dans le dossier 'cleaned'.")
-def NettoyerTextes(dossier_source, dossier_destination):
-    """
-    Nettoie les textes des fichiers dans le dossier source en supprimant la ponctuation.
-    Les fichiers modifiés sont stockés dans le dossier de destination.
-
-    Args:
-        dossier_source: Nom du dossier source.
-        dossier_destination: Nom du dossier de destination.
-    """
+def NettoyerTextes(dossier_fichiers):
+    #Nettoie les textes des fichiers dans le dossier source en supprimant la ponctuation.
+    #Les fichiers modifiés sont stockés dans le dossier de destination.
 
     # Récupérer le chemin absolu du dossier source
-    chemin_dossier_source = os.path.join(os.path.dirname(os.path.abspath(__file__)), dossier_source)
+    chemin_dossier_source = os.path.join(os.path.dirname(os.path.abspath(__file__)), dossier_fichiers)
 
     # Créer le dossier de destination s'il n'existe pas
-    chemin_dossier_destination = os.path.join(os.path.dirname(os.path.abspath(__file__)), dossier_destination)
+    chemin_dossier_destination = os.path.join(os.path.dirname(os.path.abspath(__file__)), dossier_fichiers)
     if not os.path.exists(chemin_dossier_destination):
         os.mkdir(chemin_dossier_destination)
 

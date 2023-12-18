@@ -1,3 +1,5 @@
+# To Do de DE:
+# Remplacer ce code horrible ! A quoi sert de passer "noms_presidents" si on ne l'utilise jamais ?!?
 def creer_liste_prenom_nom_formates(noms_presidents):
     prenoms = {
         "Chirac": "Jacques",
