@@ -1,17 +1,12 @@
-from FilesManager import *
-from Presidents import *
-from StringManager import *
-from TF_IDF import obtenir_dico_occurences_mots
+from files_manager import *
+from presidents import *
+import string_manager as sm
 
 ###############################################################################
 # Zone de debug temp
-#
-###############################################################################
 
-Texte = "Bonjour je suis un exemple je vais servir exemple à proprement parler"
-dico_occurences_mots = {}
-dico_occurences_mots = obtenir_dico_occurences_mots(Texte)
 
+# Fin zone de debug temp
 ################################################################################
 
 # Extraire les noms des présidents à partir des noms des fichiers texte fournis
@@ -30,12 +25,7 @@ for fichier in fichiers_discours_presidents:
 prenom_nom_des_presidents = creer_liste_prenom_nom_formates(noms_des_presidents)
 
 # 4. Convertir les fichiers en minuscules et les stocker dans le dossier "cleaned"
-# To Do de DE:
-#Declarer en tant que constante
 dossier_cleaned = "cleaned"
-# To Do de DE:
-# changer code en dur ci-dessous. A quoi sert de déclarer une constante si on utilise un code en dur ?!?
-ConvertirTextesEnMinuscules(fichiers_discours_presidents, dossier_cleaned)
-NettoyerTextes(dossier_cleaned)
 
-
+sm.convertir_texte_en_minuscules(fichiers_discours_presidents, dossier_cleaned)
+sm.nettoyer_texte(dossier_cleaned)

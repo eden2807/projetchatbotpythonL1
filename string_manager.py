@@ -1,14 +1,6 @@
 import  os
 import string
-
-# A implémenter eventuellement:
-# SupprimerPonctuation
-# CompterOccurencesMot
-# DiviserTexteEnMots
-# RechercherString
-# RemplacerChar
-# ConvertirTexteEnMajuscule
-def ConvertirTextesEnMinuscules(fichiers_sources, dossier_destination):
+def convertir_texte_en_minuscules(fichiers_sources, dossier_destination):
 
     # Convertit les textes des fichiers sources en minuscules et les stocke dans des nouveaux fichiers dans le dossier de destination.
 
@@ -40,7 +32,7 @@ def ConvertirTextesEnMinuscules(fichiers_sources, dossier_destination):
             f.write(text_minuscule)
 
         print("Les textes ont été convertis en minuscules et stockés dans le dossier 'cleaned'.")
-def NettoyerTextes(dossier_fichiers):
+def nettoyer_texte(dossier_fichiers):
     #Nettoie les textes des fichiers dans le dossier source en supprimant la ponctuation.
     #Les fichiers modifiés sont stockés dans le dossier de destination.
 
@@ -78,3 +70,10 @@ def NettoyerTextes(dossier_fichiers):
             f.write(texte_nettoye)
 
     print("Les textes ont été nettoyés et stockés dans le dossier 'cleaned'.")
+def transformer_texte_en_liste(texte):
+    liste_mots = texte.split()
+    return  liste_mots
+
+def compter_occurrences_mot(mot, texte):
+    count = texte.count(mot)
+    return count
