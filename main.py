@@ -9,9 +9,13 @@ import string_manager as sm
 # Fin zone de debug temp
 ################################################################################
 
+################################################################################
+
+################################################################################
+
 # Extraire les noms des présidents à partir des noms des fichiers texte fournis
 noms_des_presidents = [] # = FilesManager.GetListOfFiles(filesPath, filesExtension)
-dossier_discours_presidents = "./speeches"
+
 
 fichiers_discours_presidents = list_of_files(dossier_discours_presidents, ".txt")
 

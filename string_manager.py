@@ -14,9 +14,14 @@ def convertir_texte_en_minuscules(fichiers_sources, dossier_destination):
 
     # Parcourir les fichiers sources
     for fichier_source in fichiers_sources:
+
         # Construire le chemin complet du fichier source
         chemin_complet_source = os.path.join(speeches_directory, fichier_source)
 
+
+        #TO DO:
+        # Remplacer ci dessous par une fonction nommée "OpenAndGetFileContent(FilePath)"
+        # placée dans files_manager et qui renverra une string contenant l'intégralité du fichier
         # Lire le contenu du fichier
         with open(chemin_complet_source, "r", encoding="utf-8") as f:
             text = f.read()
@@ -73,7 +78,26 @@ def nettoyer_texte(dossier_fichiers):
 def transformer_texte_en_liste(texte):
     liste_mots = texte.split()
     return  liste_mots
-
 def compter_occurrences_mot(mot, texte):
     count = texte.count(mot)
     return count
+def convertir_texte_en_liste_de_mots():
+    # to do...
+    return
+
+def charger_contenu_fichier(chemin_fichier, extension = ".txt"):
+    with open(os.path.join(chemin_fichier, extension), 'r', encoding='utf-8') as file:
+        texte = file.read()
+        return texte
+
+#def ouvrir_et_charger_contenu_des_fichiers_du_dossier(chemin_dossier_fichiers, extension = ".txt"):
+#    for filename in os.listdir(chemin_dossier_fichiers):
+#        if filename.endswith(extension):
+#            with open(os.path.join(chemin_dossier_fichiers, filename), 'r', encoding='utf-8') as file:
+#                texte = file.read()
+
+
+
+
+
+

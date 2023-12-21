@@ -1,20 +1,39 @@
-
 import os
 import math
-def creer_dico_occurrences_mots(texte):
+import string_manager as sm
 
-    liste_mots = texte.split()
+matrice_TF_num_col_mot = 0
 
-    nombre_occurrences_mot = 0
+def creer_dico_occurences_mots(texte):
 
-    dico_occurrences_mots = {}
+    dico_nombre_occurences_mots = {}
 
-    for mot in liste_mots:
-        nombre_occurrences_mot = compter_occurrences_mot(mot, texte)
-        dico_occurrences_mots[mot] = nombre_occurrences_mot
+    nombre_occurences_mot: int
 
-    return dico_occurrences_mots
+    liste_mots_texte = []
 
+    liste_mots_uniques = []
+
+    # transformer le texte en liste
+    liste_mots_texte = sm.transformer_texte_en_liste(texte)
+
+    # parcourir cette liste de mots et comptabiliser le nombre d'occurences de chacun d'entre eux
+    for mot in liste_mots_texte:
+
+        if mot not in liste_mots_uniques:
+
+            # se souvenir du mot afin de ne le traiter qu'une seule et unique fois
+            liste_mots_uniques.append(mot)
+
+            # chercher le nombre d'occurences de ce mots dans la liste contenant le texte entier
+            nombre_occurences_mot = liste_mots_texte.count(mot)
+
+            # stocker le nombre d'occurences de ce mots
+            dico_nombre_occurences_mots[mot] = nombre_occurences_mot
+
+    return  dico_nombre_occurences_mots
+
+# ADAM:
 def dico_chaine_de_caractere(mot):
     def calculer_tf(chaine):
         mots = chaine.split()  # Divise la chaîne en une liste de mots
@@ -31,6 +50,7 @@ def dico_chaine_de_caractere(mot):
         tf = {mot: occurences / total_mots for mot, occurences in compteur_mots.items()}
 
         return tf
+# ADAM:
 def calculer_idf(corpus_directory):
     mots_par_document = {}  # Dictionnaire pour stocker les mots présents dans chaque document
     total_documents = 0  # Compteur du nombre total de documents dans le corpus

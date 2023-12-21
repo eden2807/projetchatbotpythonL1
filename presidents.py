@@ -1,5 +1,13 @@
+
+# constantes
+dossier_discours_presidents = "./speeches"
+dossier_discours_presidents_nettoyes = "./cleaned"
+
+
 # To Do de DE:
+
 # Remplacer ce code horrible ! A quoi sert de passer "noms_presidents" si on ne l'utilise jamais ?!?
+
 def creer_liste_prenom_nom_formates(noms_presidents):
     prenoms = {
         "Chirac": "Jacques",
@@ -10,14 +18,14 @@ def creer_liste_prenom_nom_formates(noms_presidents):
         "Sarkozy": "Nicolas"
     }
 
-    liste_prenom_nom_formattee = []
+    liste_prenom_nom_formatee = []
 
     # Utilisons la fonction items() pour parcourir à la fois le nom de famille et le prénom
     for nom_famille, prenom in prenoms.items():
         nom_formatte = f"{prenom} {nom_famille}"
-        liste_prenom_nom_formattee.append(nom_formatte)
+        liste_prenom_nom_formatee.append(nom_formatte)
 
-    return liste_prenom_nom_formattee
+    return liste_prenom_nom_formatee
 
 def extraire_nom_president(nom_fichier):
     nom_fichier = nom_fichier.replace("Nomination_", "").replace(".txt", "")
