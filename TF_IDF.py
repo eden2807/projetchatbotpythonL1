@@ -8,22 +8,13 @@ def creer_dico_occurences_mots(texte):
 
     dico_nombre_occurences_mots = {}
 
-    nombre_occurences_mot: int
-
-    liste_mots_texte = []
-
-    liste_mots_uniques = []
-
     # transformer le texte en liste
     liste_mots_texte = sm.transformer_texte_en_liste(texte)
 
     # parcourir cette liste de mots et comptabiliser le nombre d'occurences de chacun d'entre eux
     for mot in liste_mots_texte:
 
-        if mot not in liste_mots_uniques:
-
-            # se souvenir du mot afin de ne le traiter qu'une seule et unique fois
-            liste_mots_uniques.append(mot)
+        if mot not in dico_nombre_occurences_mots.keys():
 
             # chercher le nombre d'occurences de ce mots dans la liste contenant le texte entier
             nombre_occurences_mot = liste_mots_texte.count(mot)
@@ -32,7 +23,30 @@ def creer_dico_occurences_mots(texte):
             dico_nombre_occurences_mots[mot] = nombre_occurences_mot
 
     return  dico_nombre_occurences_mots
+def creer_tous_les_dicos_occurrences_mots(dossier_fichiers, extention_fichiers = ".txt"):
 
+    les_dicos_occurrences_mots = {}
+    dico_nombre_occurences_mots = {}
+
+    # parcourir tous les fichiers dispos dans dossier_fichiers
+    for nom_fichier in os.listdir(dossier_fichiers):
+
+        if nom_fichier.endswith(extention_fichiers):
+
+            # assembler le chemin complet du fichier (path dossiers + nom fichier)
+            chemin_fichier = os.path.join(dossier_fichiers, nom_fichier)
+
+            # Lire le contenu du fichier
+            with open(chemin_fichier, "r", encoding="utf-8") as f:
+                texte = f.read()
+
+            # creer le dico d'occurrences de mots
+            dico_nombre_occurences_mots = creer_dico_occurences_mots(texte)
+
+            # le stocker dans le dico des dicos d'occurrences de mots
+            les_dicos_occurrences_mots[nom_fichier] = dico_nombre_occurences_mots
+
+    return les_dicos_occurrences_mots
 # ADAM:
 def dico_chaine_de_caractere(mot):
     def calculer_tf(chaine):
