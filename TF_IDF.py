@@ -23,7 +23,7 @@ def creer_dico_occurences_mots(texte):
             dico_nombre_occurences_mots[mot] = nombre_occurences_mot
 
     return  dico_nombre_occurences_mots
-def creer_tous_les_dicos_occurrences_mots(dossier_fichiers, extention_fichiers = ".txt"):
+def creer_tous_les_dicos_occurrences_mots(dossier_fichiers, extension_fichiers = ".txt"):
 
     les_dicos_occurrences_mots = {}
     dico_nombre_occurences_mots = {}
@@ -31,7 +31,7 @@ def creer_tous_les_dicos_occurrences_mots(dossier_fichiers, extention_fichiers =
     # parcourir tous les fichiers dispos dans dossier_fichiers
     for nom_fichier in os.listdir(dossier_fichiers):
 
-        if nom_fichier.endswith(extention_fichiers):
+        if nom_fichier.endswith(extension_fichiers):
 
             # assembler le chemin complet du fichier (path dossiers + nom fichier)
             chemin_fichier = os.path.join(dossier_fichiers, nom_fichier)
