@@ -1,5 +1,5 @@
 import os
-import math
+import math as ma
 import string_manager as sm
 import lists_manager as lm
 
@@ -161,7 +161,93 @@ def creer_matrice_tf(les_dicos_occurrences_mots):
                 matrice_tf[ligne_mot][num_col_doc_courant] = nombre_occurrences_mot
 
     return matrice_tf
+def creer_matrice_idf(nom_dossier_cleaned):
 
+    # 1) créer tous les dicos occurrences mots et les stocker dans un "dico de dicos"
+    les_dicos_mots_docs = creer_tous_les_dicos_occurrences_mots(nom_dossier_cleaned)
+
+    # 2) pour chaque dico, donc chaque fichier du corpus, savoir dans quel fichier il est présent
+    matrice_presence_mots_dans_docs = []
+
+    # Connaitre le nombre de colonnes nécessaires
+    nombre_docs = len(les_dicos_mots_docs)
+
+    # def d'une ligne de la matrice: col mot + n * col avec n = nbre docs occurences mots
+    ligne_matrice_presence_mots_dans_doc = [""] + [0] * nombre_docs
+
+    ligne_mot = -1
+    num_col_doc_courant = 0
+    i = 0
+
+    # contruction de la première ligne de la matrice qui est spéciale car elle contient
+    # le titre de tous les fichiers cleaned du corpus (= toutes les clés des dicos nommé "les_dicos_occurrences_mots")
+    # for nom_dico_mots_doc_courant, dico_mots_doc_courant in les_dicos_mots_docs.items():
+    #    i += 1
+    #    ligne_matrice_presence_mots_dans_doc[i] = nom_dico_mots_doc_courant
+
+    # ajouter dans la matrice cette première ligne spéciale contenant le nom des fichiers
+    # matrice_presence_mots_dans_docs.append(ligne_matrice_presence_mots_dans_doc)
+
+    # ini data ligne matrice idf
+    ligne_matrice_presence_mots_dans_doc = [""] + [0] * nombre_docs
+
+    # remplissage de la matrice
+    for dico_mots_doc_courant in les_dicos_mots_docs.values():
+
+        num_col_doc_courant += 1
+
+        for mot in dico_mots_doc_courant.keys():
+
+            # mot existant dans la matrice ?
+            if num_col_doc_courant > 1:
+                ligne_mot = lm.chercher_valeur_dans_liste_2D(matrice_presence_mots_dans_docs, mot, matrice_idf_num_col_mot)
+
+            # le mot n'existe pas, l'ajouter dans la matrice
+            if ligne_mot == -1:
+
+                # ajouter le mot dans la ligne de la matrice
+                ligne_matrice_presence_mots_dans_doc[0] = mot
+
+                # conserver l'info concernant l'existence de ce mot pour ce doc
+                ligne_matrice_presence_mots_dans_doc[num_col_doc_courant] = mot_existant
+
+                # ajouter la nouvelle ligne dans la matrice
+                matrice_presence_mots_dans_docs.append(ligne_matrice_presence_mots_dans_doc)
+
+            # le mot existe, on ajoute le nombre d'occurrences trouvés pour ce mot dans ce doc
+            else:
+                matrice_presence_mots_dans_docs[ligne_mot][num_col_doc_courant] = mot_existant
+
+            # ini data ligne matrice idf
+            ligne_matrice_presence_mots_dans_doc = [""] + [0] * nombre_docs
+
+    # creation de la matrice idf (2 cols: mot et score idf)
+    matrice_idf = []
+    ligne_matrice_idf = [""] + [0]
+
+    # pour chaque mot existant dans la matrice_presence_mots_dans_docs
+    # trouver le nombre de fois ou ce mot est présent dans les docs et en faire le total
+    nombre_total_de_docs_contenant_ce_mot = 0
+
+    for i in range(len(matrice_presence_mots_dans_docs)):  # parcourir tous les mots
+        for j in range(1, len(matrice_presence_mots_dans_docs[i])):  # parcourir chaque colonne
+            # calcul du nombre total de docs dans lesquels figurent ce mot
+            nombre_total_de_docs_contenant_ce_mot += matrice_presence_mots_dans_docs[i][j]
+
+        mot = matrice_presence_mots_dans_docs[i][0]
+
+        #  calculer le score idf et le stocker dans la matrice idf
+        score_idf_mot = ma.log10(nombre_docs / nombre_total_de_docs_contenant_ce_mot)
+        score_idf_mot = round(score_idf_mot, 2)
+
+        ligne_matrice_idf = [mot] + [score_idf_mot]
+
+        matrice_idf.append(ligne_matrice_idf)
+
+        ligne_matrice_idf = [""] + [0]
+        nombre_total_de_docs_contenant_ce_mot = 0
+
+    return matrice_idf
 
 
 
