@@ -3,8 +3,9 @@ import math
 import string_manager as sm
 import lists_manager as lm
 
-
-matrice_TF_num_col_mot = 0
+matrice_tf_num_col_mot = 0
+matrice_idf_num_col_mot = 0
+mot_existant = 1
 
 def creer_dico_occurences_mots(texte):
 
@@ -68,6 +69,7 @@ def dico_chaine_de_caractere(mot):
         return tf
 # ADAM:
 def calculer_idf(corpus_directory):
+
     mots_par_document = {}  # Dictionnaire pour stocker les mots présents dans chaque document
     total_documents = 0  # Compteur du nombre total de documents dans le corpus
 
@@ -100,8 +102,8 @@ def creer_matrice_tf(les_dicos_occurrences_mots):
     # Note: Il doit donc y avoir autant de colonnes que de docs, chaque doc possedant son propre
     # dictionnaire d'occurrences de mots.
 
-    # La matrice TF est une liste 2D
-    matrice_TF = []
+    # La matrice tf est une liste 2D
+    matrice_tf = []
 
     # Connaitre le nombre de colonnes nécessaires pour la matrice
     nombre_docs_occurrences_mots = len(les_dicos_occurrences_mots)
@@ -119,11 +121,11 @@ def creer_matrice_tf(les_dicos_occurrences_mots):
     # le titre de tous les fichiers cleaned du corpus (= toutes les clés des dicos nommé "les_dicos_occurrences_mots")
     for nom_dico_occurrences_mots_courant, dico_occurrences_mots in les_dicos_occurrences_mots.items():
         i += 1
-        dico_correspondance_nom_doc_corpus_et_num_col[nom_dico_occurrences_mots_courant] = i
-        ligne_matrice_tf[i] = nom_dico_occurrences_mots_courant
+        dico_correspondance_nom_doc_corpus_et_num_col[i] = nom_dico_occurrences_mots_courant
+        # ligne_matrice_tf[i] = nom_dico_occurrences_mots_courant
 
-    # ajouter dans la matrice TF cette première ligne spéciale contenant le nom des fichiers
-    matrice_TF.append(ligne_matrice_tf)
+    # ajouter dans la matrice tf cette première ligne spéciale contenant le nom des fichiers
+    # matrice_tf.append(ligne_matrice_tf)
 
     # remplissage de la matrice
     for dico_courant_occurrences_mots in les_dicos_occurrences_mots.values():
@@ -132,31 +134,34 @@ def creer_matrice_tf(les_dicos_occurrences_mots):
 
         for mot, nombre_occurrences_mot in dico_courant_occurrences_mots.items():
 
-            # ini data ligne matrice TF
+            # ini data ligne matrice tf
             ligne_matrice_tf = [""] + [0] * nombre_docs_occurrences_mots
 
-            # mot existant dans la matrice TF ?
+            # mot existant dans la matrice tf ?
             if num_col_doc_courant > 1:
-                ligne_mot = lm.chercher_valeur_dans_liste_2D(matrice_TF, mot, matrice_TF_num_col_mot)
+                ligne_mot = lm.chercher_valeur_dans_liste_2D(matrice_tf, mot, matrice_tf_num_col_mot)
 
-            # le mot n'existe pas, l'ajouter dans la matrice TF
+            # le mot n'existe pas, l'ajouter dans la matrice tf
             if ligne_mot == -1:
-                # ajouter une ligne dans matrice TF pour le nouveau mot;
-                # mettre mot dans col matrice_TF_num_col_mot (0) et nombre_occurrences_mot dans col = num_doc en cours"
 
-                # ajouter le mot dans la ligne de la matrice TF
-                ligne_matrice_tf[matrice_TF_num_col_mot] = mot
+                # ajouter une ligne dans matrice TF pour le nouveau mot;
+                # mettre mot dans col matrice_tf_num_col_mot (0) et nombre_occurrences_mot dans col = num_doc en cours"
+
+                # ajouter le mot dans la ligne de la matrice tf
+                ligne_matrice_tf[matrice_tf_num_col_mot] = mot
 
                 # stockage nombre occurrences mot; col = num doc concerné (num_col_doc_courant)
                 ligne_matrice_tf[num_col_doc_courant] = nombre_occurrences_mot
 
-                # ajouter la nouvelle ligne dans la matrice TF
-                matrice_TF.append(ligne_matrice_tf)
+                # ajouter la nouvelle ligne dans la matrice tf
+                matrice_tf.append(ligne_matrice_tf)
 
             # le mot existe, on ajoute le nombre d'occurrences trouvés pour ce mot dans ce doc
             else:
-                matrice_TF[ligne_mot][num_col_doc_courant] = nombre_occurrences_mot
-    return
+                matrice_tf[ligne_mot][num_col_doc_courant] = nombre_occurrences_mot
+
+    return matrice_tf
+
 
 
 
