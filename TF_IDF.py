@@ -252,7 +252,7 @@ def creer_matrice_idf(nom_dossier_cleaned):
 def creer_matrice_tf_idf(nom_dossier_cleaned):
 
     # 1) creer les dicos d'occurences de mots
-    les_dicos_occurrences_mots = creer_tous_les_dicos_occurrences_mots(m.nom_dossier_cleaned)
+    les_dicos_occurrences_mots = creer_tous_les_dicos_occurrences_mots(nom_dossier_cleaned)
 
     if len(les_dicos_occurrences_mots) == 0:
         return
