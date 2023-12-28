@@ -263,7 +263,7 @@ def creer_matrice_tf_idf(nom_dossier_cleaned):
 
     # 3) créer matrice IDF
     matrice_idf = []
-    matrice_idf = creer_matrice_idf(m.nom_dossier_cleaned)
+    matrice_idf = creer_matrice_idf(nom_dossier_cleaned)
 
     # 4) créer effectivement la matrice tf_idf en fonction des matrices créées précedemment
     matrice_tf_idf = []
