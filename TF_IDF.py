@@ -5,8 +5,51 @@ import lists_manager as lm
 
 matrice_tf_num_col_mot = 0
 matrice_idf_num_col_mot = 0
+matrice_tf_num_col_score_idf = 1
 mot_existant = 1
 
+# ADAM:
+def dico_chaine_de_caractere(mot):
+    def calculer_tf(chaine):
+        mots = chaine.split()  # Divise la chaîne en une liste de mots
+        compteur_mots = {}
+
+        for mot in mots:
+            mot = mot.lower()  # Convertit le mot en minuscules pour éviter la distinction entre majuscules et minuscules
+            mot = mot.strip('.,!?()[]{}\'"')  # Supprime la ponctuation autour des mots
+            if mot:
+                compteur_mots[mot] = compteur_mots.get(mot, 0) + 1
+
+        # Calculer la fréquence du terme (TF) pour chaque mot
+        total_mots = len(mots)
+        tf = {mot: occurences / total_mots for mot, occurences in compteur_mots.items()}
+
+        return tf
+# ADAM:
+def calculer_idf(corpus_directory):
+
+    mots_par_document = {}  # Dictionnaire pour stocker les mots présents dans chaque document
+    total_documents = 0  # Compteur du nombre total de documents dans le corpus
+
+    # Parcours de tous les fichiers dans le répertoire du corpus
+    for filename in os.listdir(corpus_directory):
+        if filename.endswith(".txt"):
+            with open(os.path.join(corpus_directory, filename), 'r', encoding='utf-8') as file:
+                document = file.read()
+                mots = set(document.split())  # Utilisation d'un  ensemble pour obtenir les mots uniques dans le document
+                mots_par_document[filename] = mots
+                total_documents += 1
+
+    # Calcul de l'IDF pour chaque mot
+    idf = {}
+    for document, mots in mots_par_document.items():
+        for mot in mots:
+            idf[mot] = idf.get(mot, 0) + 1
+
+    for mot, occurrences in idf.items():
+        idf[mot] = math.log(total_documents / (1 + occurrences))  # Ajout de 1 pour éviter la division par zéro
+
+    return idf
 def creer_dico_occurences_mots(texte):
 
     dico_nombre_occurences_mots = {}
@@ -50,48 +93,6 @@ def creer_tous_les_dicos_occurrences_mots(dossier_fichiers, extension_fichiers =
             les_dicos_occurrences_mots[nom_fichier] = dico_nombre_occurences_mots
 
     return les_dicos_occurrences_mots
-# ADAM:
-def dico_chaine_de_caractere(mot):
-    def calculer_tf(chaine):
-        mots = chaine.split()  # Divise la chaîne en une liste de mots
-        compteur_mots = {}
-
-        for mot in mots:
-            mot = mot.lower()  # Convertit le mot en minuscules pour éviter la distinction entre majuscules et minuscules
-            mot = mot.strip('.,!?()[]{}\'"')  # Supprime la ponctuation autour des mots
-            if mot:
-                compteur_mots[mot] = compteur_mots.get(mot, 0) + 1
-
-        # Calculer la fréquence du terme (TF) pour chaque mot
-        total_mots = len(mots)
-        tf = {mot: occurences / total_mots for mot, occurences in compteur_mots.items()}
-
-        return tf
-# ADAM:
-def calculer_idf(corpus_directory):
-
-    mots_par_document = {}  # Dictionnaire pour stocker les mots présents dans chaque document
-    total_documents = 0  # Compteur du nombre total de documents dans le corpus
-
-    # Parcours de tous les fichiers dans le répertoire du corpus
-    for filename in os.listdir(corpus_directory):
-        if filename.endswith(".txt"):
-            with open(os.path.join(corpus_directory, filename), 'r', encoding='utf-8') as file:
-                document = file.read()
-                mots = set(document.split())  # Utilisation d'un  ensemble pour obtenir les mots uniques dans le document
-                mots_par_document[filename] = mots
-                total_documents += 1
-
-    # Calcul de l'IDF pour chaque mot
-    idf = {}
-    for document, mots in mots_par_document.items():
-        for mot in mots:
-            idf[mot] = idf.get(mot, 0) + 1
-
-    for mot, occurrences in idf.items():
-        idf[mot] = math.log(total_documents / (1 + occurrences))  # Ajout de 1 pour éviter la division par zéro
-
-    return idf
 def creer_matrice_tf(les_dicos_occurrences_mots):
 
     # def d'une ligne composant la matrice TF
@@ -248,6 +249,52 @@ def creer_matrice_idf(nom_dossier_cleaned):
         nombre_total_de_docs_contenant_ce_mot = 0
 
     return matrice_idf
+def creer_matrice_tf_idf(nom_dossier_cleaned):
 
+    # 1) creer les dicos d'occurences de mots
+    les_dicos_occurrences_mots = creer_tous_les_dicos_occurrences_mots(m.nom_dossier_cleaned)
 
+    if len(les_dicos_occurrences_mots) == 0:
+        return
 
+    # 2) créer matrice TF d'après les dicos créés précedemment
+    matrice_tf = []
+    matrice_tf = creer_matrice_tf(les_dicos_occurrences_mots)
+
+    # 3) créer matrice IDF
+    matrice_idf = []
+    matrice_idf = creer_matrice_idf(m.nom_dossier_cleaned)
+
+    # 4) créer effectivement la matrice tf_idf en fonction des matrices créées précedemment
+    matrice_tf_idf = []
+    ligne_matrice_tf_idf = []
+
+    # parcourir la ligne de la matrice tf ET de la matrice idf.
+    # rappel: les 2 matrices ont le même nombre de lignes (donc le même nombre de mots qui sont uniques)
+    for i in range(len(matrice_tf)):
+
+        ligne_matrice_tf_idf = []
+        val_tf = 0
+        val_idf = 0
+        score_tf_idf = 0
+
+        # stocker le mot courant
+        ligne_matrice_tf_idf = [matrice_tf[i][matrice_tf_num_col_mot]]
+
+        # stocker le score idf de ce mot
+        val_idf = matrice_idf[i][matrice_tf_num_col_score_idf]
+
+        # parcourir toutes les valeurs ( de tous les docs) de la matrice tf et * par
+        # le score idf afin d'obtenir le score tf-idf du mot (on le fait pour chaque doc,
+        # donc pr chaque colonnes de la matrice tf)
+        for j in range(1, len(matrice_tf[i])):
+
+            # stocker le score tf-idf pour ce mot, pour le doc courant X
+            val_tf = matrice_tf[i][j]
+            score_tf_idf = val_tf * val_idf
+            score_tf_idf = round(score_tf_idf, 2)
+            ligne_matrice_tf_idf += [score_tf_idf]
+
+        matrice_tf_idf.append(ligne_matrice_tf_idf)
+
+    return matrice_tf_idf
