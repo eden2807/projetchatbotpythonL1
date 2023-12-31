@@ -5,6 +5,7 @@ import lists_manager as lm
 
 matrice_tf_num_col_mot = 0
 matrice_idf_num_col_mot = 0
+matrice_idf_transposée_num_ligne_mot = 0
 matrice_tf_num_col_score_idf = 1
 mot_existant = 1
 
@@ -47,7 +48,7 @@ def calculer_idf(corpus_directory):
             idf[mot] = idf.get(mot, 0) + 1
 
     for mot, occurrences in idf.items():
-        idf[mot] = math.log(total_documents / (1 + occurrences))  # Ajout de 1 pour éviter la division par zéro
+        idf[mot] = ma.log(total_documents / (1 + occurrences))  # Ajout de 1 pour éviter la division par zéro
 
     return idf
 def creer_dico_occurences_mots(texte):
@@ -298,3 +299,18 @@ def creer_matrice_tf_idf(nom_dossier_cleaned):
         matrice_tf_idf.append(ligne_matrice_tf_idf)
 
     return matrice_tf_idf
+def score_tf_idf_question(question, matrice_idf_transposee):
+    liste_mots_question = question.split(" ")
+    dico_question = {}
+    mot_question = ""
+    for i in range(len(liste_mots_question)):
+        mot = liste_mots_question[i]
+        for j in range(len(matrice_idf_transposee[tf_idf.matrice_idf_transposée_num_ligne_mot])):
+            if mot in matrice_idf_transposee[j]:
+                if liste_mots_question[i] not in dico_question.keys():
+                    dico_question[mot] = 1
+                else:
+                    dico_question[mot] += 1
+                j = 0
+                break
+    return dico_question

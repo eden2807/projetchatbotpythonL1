@@ -1,3 +1,0 @@
-# A implémenter eventuellement:
-
-# CalculSimilaritéEntreQuestionEtCorpus

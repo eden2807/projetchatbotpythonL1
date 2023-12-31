@@ -60,12 +60,20 @@ def nettoyer_texte(dossier_fichiers):
         with open(chemin_complet_source, "r", encoding="utf-8") as f:
             texte = f.read()
 
+        ###################################################################################
+        # nettoyer_chaine_de_caracteres
+        # Début fonction
+        ###################################################################################
         # Supprimer la ponctuation tout en conservant les espaces
         texte_nettoye = "".join(c if c not in string.punctuation else " " for c in texte)
 
         # Traiter les caractères spéciaux
         for caractere, remplacement in caracteres_speciaux.items():
             texte_nettoye = texte_nettoye.replace(caractere, remplacement)
+        ###################################################################################
+        # nettoyer_chaine_de_caracteres
+        # Fin fonction
+        ###################################################################################
 
         # Construire le chemin complet du fichier de destination
         chemin_complet_destination = os.path.join(chemin_dossier_destination, fichier)
@@ -74,10 +82,9 @@ def nettoyer_texte(dossier_fichiers):
         with open(chemin_complet_destination, "w", encoding="utf-8") as f:
             f.write(texte_nettoye)
 
+    return texte_nettoye
+
     print("Les textes ont été nettoyés et stockés dans le dossier 'cleaned'.")
-def transformer_texte_en_liste(texte):
-    liste_mots = texte.split()
-    return  liste_mots
 def compter_occurrences_mot(mot, texte):
     count = texte.count(mot)
     return count
