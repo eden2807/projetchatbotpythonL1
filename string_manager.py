@@ -88,10 +88,6 @@ def nettoyer_texte(dossier_fichiers):
 def compter_occurrences_mot(mot, texte):
     count = texte.count(mot)
     return count
-def convertir_texte_en_liste_de_mots():
-    # to do...
-    return
-
 def charger_contenu_fichier(chemin_fichier, extension = ".txt"):
     with open(os.path.join(chemin_fichier, extension), 'r', encoding='utf-8') as file:
         texte = file.read()

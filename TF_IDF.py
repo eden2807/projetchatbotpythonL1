@@ -1,6 +1,5 @@
 import os
 import math as ma
-import string_manager as sm
 import lists_manager as lm
 
 matrice_tf_num_col_mot = 0
@@ -56,9 +55,9 @@ def creer_dico_occurences_mots(texte):
     dico_nombre_occurences_mots = {}
 
     # transformer le texte en liste
-    liste_mots_texte = sm.transformer_texte_en_liste(texte)
+    liste_mots_texte = texte.split()
 
-    # parcourir cette liste de mots et comptabiliser le nombre d'occurences de chacun d'entre eux
+    # parcourir cette liste de mots et comptabiliser le nombre d'occurences pour chacun d'entre eux
     for mot in liste_mots_texte:
 
         if mot not in dico_nombre_occurences_mots.keys():
