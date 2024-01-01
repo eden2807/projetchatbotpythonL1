@@ -18,7 +18,6 @@ def convertir_texte_en_minuscules(fichiers_sources, dossier_destination):
         # Construire le chemin complet du fichier source
         chemin_complet_source = os.path.join(speeches_directory, fichier_source)
 
-
         #TO DO:
         # Remplacer ci dessous par une fonction nommée "OpenAndGetFileContent(FilePath)"
         # placée dans files_manager et qui renverra une string contenant l'intégralité du fichier
@@ -36,7 +35,6 @@ def convertir_texte_en_minuscules(fichiers_sources, dossier_destination):
         with open(chemin_complet_destination, "w", encoding="utf-8") as f:
             f.write(text_minuscule)
 
-        print("Les textes ont été convertis en minuscules et stockés dans le dossier 'cleaned'.")
 def nettoyer_texte(dossier_fichiers):
     #Nettoie les textes des fichiers dans le dossier source en supprimant la ponctuation.
     #Les fichiers modifiés sont stockés dans le dossier de destination.
@@ -50,6 +48,7 @@ def nettoyer_texte(dossier_fichiers):
         os.mkdir(chemin_dossier_destination)
 
     # Liste des caractères spéciaux à traiter
+    # DE: A corriger ! (Ajouter ";", "!", "?", "...")
     caracteres_speciaux = {"'": " ", "-": " "}
 
     # Parcourir les fichiers dans le dossier source

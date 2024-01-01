@@ -2,12 +2,18 @@ import os
 import math as ma
 import lists_manager as lm
 
-matrice_tf_num_col_mot = 0
-matrice_idf_num_col_mot = 0
-matrice_idf_transposée_num_ligne_mot = 0
+les_dicos_occurrences_mots = {}
+matrice_tf_discours_presidents = []
+matrice_idf_discours_presidents = []
+matrice_tf_idf_discours_presidents = []
+matrice_transposee_tf_idf_discours_presidents = []
+matrice_tf_discours_presidents_num_col_mot = 0
+matrice_idf_discours_presidents_num_col_mot = 0
 matrice_tf_num_col_score_idf = 1
+matrice_transposée_idf_discours_presidents_num_ligne_mot = 0
 mot_existant = 1
 
+###############################################################################################"
 # ADAM:
 def dico_chaine_de_caractere(mot):
     def calculer_tf(chaine):
@@ -50,6 +56,8 @@ def calculer_idf(corpus_directory):
         idf[mot] = ma.log(total_documents / (1 + occurrences))  # Ajout de 1 pour éviter la division par zéro
 
     return idf
+###############################################################################################"
+
 def creer_dico_occurences_mots(texte):
 
     dico_nombre_occurences_mots = {}
@@ -72,7 +80,7 @@ def creer_dico_occurences_mots(texte):
 def creer_tous_les_dicos_occurrences_mots(dossier_fichiers, extension_fichiers = ".txt"):
 
     les_dicos_occurrences_mots = {}
-    dico_nombre_occurences_mots = {}
+    dico_occurences_mots = {}
 
     # parcourir tous les fichiers dispos dans dossier_fichiers
     for nom_fichier in os.listdir(dossier_fichiers):
@@ -87,10 +95,10 @@ def creer_tous_les_dicos_occurrences_mots(dossier_fichiers, extension_fichiers =
                 texte = f.read()
 
             # creer le dico d'occurrences de mots
-            dico_nombre_occurences_mots = creer_dico_occurences_mots(texte)
+            dico_occurences_mots = creer_dico_occurences_mots(texte)
 
             # le stocker dans le dico des dicos d'occurrences de mots
-            les_dicos_occurrences_mots[nom_fichier] = dico_nombre_occurences_mots
+            les_dicos_occurrences_mots[nom_fichier] = dico_occurences_mots
 
     return les_dicos_occurrences_mots
 def creer_matrice_tf(les_dicos_occurrences_mots):
@@ -140,7 +148,7 @@ def creer_matrice_tf(les_dicos_occurrences_mots):
 
             # mot existant dans la matrice tf ?
             if num_col_doc_courant > 1:
-                ligne_mot = lm.chercher_valeur_dans_liste_2D(matrice_tf, mot, matrice_tf_num_col_mot)
+                ligne_mot = lm.chercher_valeur_dans_liste_2D(matrice_tf, mot, matrice_tf_discours_presidents_num_col_mot)
 
             # le mot n'existe pas, l'ajouter dans la matrice tf
             if ligne_mot == -1:
@@ -149,7 +157,7 @@ def creer_matrice_tf(les_dicos_occurrences_mots):
                 # mettre mot dans col matrice_tf_num_col_mot (0) et nombre_occurrences_mot dans col = num_doc en cours"
 
                 # ajouter le mot dans la ligne de la matrice tf
-                ligne_matrice_tf[matrice_tf_num_col_mot] = mot
+                ligne_matrice_tf[matrice_tf_discours_presidents_num_col_mot] = mot
 
                 # stockage nombre occurrences mot; col = num doc concerné (num_col_doc_courant)
                 ligne_matrice_tf[num_col_doc_courant] = nombre_occurrences_mot
@@ -201,7 +209,7 @@ def creer_matrice_idf(nom_dossier_cleaned):
 
             # mot existant dans la matrice ?
             if num_col_doc_courant > 1:
-                ligne_mot = lm.chercher_valeur_dans_liste_2D(matrice_presence_mots_dans_docs, mot, matrice_idf_num_col_mot)
+                ligne_mot = lm.chercher_valeur_dans_liste_2D(matrice_presence_mots_dans_docs, mot, matrice_idf_discours_presidents_num_col_mot)
 
             # le mot n'existe pas, l'ajouter dans la matrice
             if ligne_mot == -1:
@@ -249,21 +257,16 @@ def creer_matrice_idf(nom_dossier_cleaned):
         nombre_total_de_docs_contenant_ce_mot = 0
 
     return matrice_idf
-def creer_matrice_tf_idf(nom_dossier_cleaned):
-
-    # 1) creer les dicos d'occurences de mots
-    les_dicos_occurrences_mots = creer_tous_les_dicos_occurrences_mots(nom_dossier_cleaned)
+def creer_matrice_tf_idf(nom_dossier_cleaned, les_dicos_occurrences_mots, matrice_tf, matrice_idf):
 
     if len(les_dicos_occurrences_mots) == 0:
         return
 
-    # 2) créer matrice TF d'après les dicos créés précedemment
-    matrice_tf = []
-    matrice_tf = creer_matrice_tf(les_dicos_occurrences_mots)
+    # créer matrice TF d'après les dicos créés précedemment
+    # matrice_tf = creer_matrice_tf(les_dicos_occurrences_mots)
 
-    # 3) créer matrice IDF
-    matrice_idf = []
-    matrice_idf = creer_matrice_idf(nom_dossier_cleaned)
+    # créer matrice IDF
+    # matrice_idf = creer_matrice_idf(nom_dossier_cleaned)
 
     # 4) créer effectivement la matrice tf_idf en fonction des matrices créées précedemment
     matrice_tf_idf = []
@@ -279,7 +282,7 @@ def creer_matrice_tf_idf(nom_dossier_cleaned):
         score_tf_idf = 0
 
         # stocker le mot courant
-        ligne_matrice_tf_idf = [matrice_tf[i][matrice_tf_num_col_mot]]
+        ligne_matrice_tf_idf = [matrice_tf[i][matrice_tf_discours_presidents_num_col_mot]]
 
         # stocker le score idf de ce mot
         val_idf = matrice_idf[i][matrice_tf_num_col_score_idf]
@@ -298,18 +301,82 @@ def creer_matrice_tf_idf(nom_dossier_cleaned):
         matrice_tf_idf.append(ligne_matrice_tf_idf)
 
     return matrice_tf_idf
-def score_tf_idf_question(question, matrice_idf_transposee):
+def transpose_matrice(matrice):
+
+    # DE: Deplacer cette fonction dans un fichier matrices_manager.py ?
+
+    matrice_transposee = []
+    ligne_matrice = []
+    ligne_matrice_transposee = []
+    cur_col = 0
+    cur_ligne = 0
+
+    ##########################################################################################
+    # ici: creer les ligne docs de la matrice transposee d'apres les docs présents dans le dico
+    #
+    # Les lignes de la matrice transposee contiennent les docs 1 à N
+    #
+    # Les colonnes de la matrice reversed contiennent les mots du corpus
+    ##########################################################################################
+
+    # a ce stade, nous avons une matrice transposee contenant le nombre de lignes voulues
+    # leur nombre correspondant au nombre de docs existants
+
+    # ajouter les toutes les colonnes (mots) dans la matrice transposee
+    for ligne in range(len(matrice)):
+         mot = matrice[ligne][0]
+         ligne_matrice_transposee += [mot]
+
+    # ajouter la première ligne à la matrice transposée (tous les mots)
+    matrice_transposee.append(ligne_matrice_transposee)
+
+    # ajout le nombre de lignes requis à la matrice transposée (= nombre de colonnes de la matrice d'origine)
+    ligne_matrice_transposee = []
+    for ligne in range(1, len(matrice[0])):
+        ligne_matrice_transposee = [0] * len(matrice)
+        matrice_transposee.append(ligne_matrice_transposee)
+        ligne_matrice_transposee = []
+
+    # a ce stade, on a la matrice reversed "formée" avec lignes et colonnes,
+    # et avec les mots dans chaque colonne de la ligne 0.
+    # Il n'y a pas de valeurs pour le moment. on va donc chercher ces valeurs pour les remplir
+
+    # (pour une colonne (un mot donné), trouver les valeurs col 1 à col n (doc 1 à doc n)
+    for ligne in range(len(matrice)):
+        for colonne in range(1, len(matrice[ligne])):
+            ligne_matrice += [matrice[ligne][colonne]]
+
+        # a ce stade on a une ligne renseignée avec val ayant cette forme
+        # mot x | doc 1 | doc 2 | doc x
+        # mettre ces valeurs dans la matrice transposée. les lignes contiennent les docs et les col contiennent les mots
+        cur_ligne = 1
+
+        for i in range(len(ligne_matrice)):
+            cur_val = ligne_matrice[i]
+            matrice_transposee[cur_ligne][cur_col] = cur_val
+            cur_ligne += 1
+
+        ligne_matrice = []
+        cur_col += 1
+
+    return matrice_transposee
+def creer_vecteur_tf_idf_question(question, matrice__transposee_idf_discours_presidents):
     liste_mots_question = question.split(" ")
     dico_question = {}
     mot_question = ""
+    # calcul du score TF de la question
     for i in range(len(liste_mots_question)):
         mot = liste_mots_question[i]
-        for j in range(len(matrice_idf_transposee[tf_idf.matrice_idf_transposée_num_ligne_mot])):
-            if mot in matrice_idf_transposee[j]:
-                if liste_mots_question[i] not in dico_question.keys():
+        for j in range(len(matrice__transposee_idf_discours_presidents[matrice_transposée_idf_discours_presidents_num_ligne_mot])):
+            if mot in matrice__transposee_idf_discours_presidents[j]:
+                if mot not in dico_question.keys():
                     dico_question[mot] = 1
                 else:
                     dico_question[mot] += 1
                 j = 0
                 break
+    # calcul du vecteur TF-IDF de la question
+    # Note: sur une liste 1D celui-ci s'obtient en * le tf de la question par le score IDF
+    # des mots du corpus des discours des présidents
+
     return dico_question
