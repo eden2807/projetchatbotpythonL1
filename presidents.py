@@ -3,8 +3,9 @@ from files_manager import *
 # constantes
 dossier_discours_presidents = "./speeches"
 dossier_discours_presidents_nettoyes = "./cleaned"
-fichiers_discours_presidents = []
+noms_fichiers_discours_presidents = []
 noms_des_presidents = []
+dico_des_questions_sur_stats_mots_corpus = {}
 
 def creer_liste_prenom_nom_formates(noms_des_presidents):
     # DE: A corriger !
@@ -70,10 +71,12 @@ def afficher_liste_presidents(noms_presidents):
     print("Liste des noms des présidents (sans doublons):")
     for nom in noms_uniques:
         print(nom)
-def obtenir_fichiers_discours_presidents(dossier_discours_presidents):
-    # Extraire les noms des présidents à partir des noms des fichiers texte fournis
+def obtenir_nom_fichiers_discours_presidents(dossier_discours_presidents):
     fichiers_discours_presidents = list_of_files(dossier_discours_presidents, ".txt")
     return fichiers_discours_presidents
+def obtenir_contenu_fichiers_discours_presidents_nettoyes():
+
+    return
 def obtenir_liste_prenom_nom_des_presidents(fichiers_discours_presidents):
 
     # A deplacer dans le fichier "Presidents"
@@ -86,3 +89,16 @@ def obtenir_liste_prenom_nom_des_presidents(fichiers_discours_presidents):
     prenom_nom_des_presidents = creer_liste_prenom_nom_formates(noms_des_presidents)
 
     return prenom_nom_des_presidents
+def remplir_dico_avec_questions_stat_mots_corpus():
+
+    # DE: A corriger !
+    # remplir avec le contenu d'un fichier plutot "qu'en dur" !
+    #listbox_stat_mots_corpus.insert(1, "Afficher les mots les MOINS importants dans les discours des présidents")
+    #listbox_stat_mots_corpus.insert(2, "Afficher les mots les PLUS importants dans les discours des présidents")
+    #listbox_stat_mots_corpus.insert(3, "Trouver les mots significatifs les plus répétés par J. Chirac")
+    #listbox_stat_mots_corpus.insert(4,
+    #listbox_stat_mots_corpus.insert(5, "Montrer qui a parler du climat et/ou de l'écologie")
+
+    dico_des_questions_sur_stats_mots_corpus[0] = "Afficher les mots les MOINS importants dans les discours des présidents"
+
+    return dico_des_questions_sur_stats_mots_corpus
