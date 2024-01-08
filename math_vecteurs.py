@@ -28,6 +28,9 @@ def calculer_norme_vecteur(vecteur):
     return total
 def calcul_similarite_vecteurs(vecteur_A, vecteur_B):
 
+    if len(vecteur_A) != len(vecteur_B):
+        return "Erreur, les vecteurs A et B doivent être de même longueur"
+
     # produit scalaire A.B / Norme vecteur A x Norme vecteur B
     produite_scalaire_vecteur_AB = 0
     produite_scalaire_vecteur_AB = calculer_produit_scalaire_vecteurs(vecteur_A, vecteur_B)
@@ -37,11 +40,15 @@ def calcul_similarite_vecteurs(vecteur_A, vecteur_B):
     norme_vecteur_AB = 0
 
     norme_vecteur_A = calculer_norme_vecteur(vecteur_A)
+
     norme_vecteur_B = calculer_norme_vecteur(vecteur_B)
 
     norme_vecteur_AB = norme_vecteur_A * norme_vecteur_B
 
+    if norme_vecteur_AB == 0:
+        return 0
+
     similarite_vecteurs = 0
     similarite_vecteurs = produite_scalaire_vecteur_AB / norme_vecteur_AB
 
-    return similarite_vecteurs
+    return round(similarite_vecteurs, 3)

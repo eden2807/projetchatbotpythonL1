@@ -3,7 +3,9 @@ from files_manager import *
 # constantes
 dossier_discours_presidents = "./speeches"
 dossier_discours_presidents_nettoyes = "./cleaned"
-noms_fichiers_discours_presidents = []
+liste_noms_fichiers_discours_presidents = []
+dico_fichiers_discours_presidents = {} # clé = num fichier, valeur = nom du fichier
+nombre_docs_fichiers_discours_presidents = 0
 noms_des_presidents = []
 dico_des_questions_sur_stats_mots_corpus = {}
 
@@ -74,9 +76,15 @@ def afficher_liste_presidents(noms_presidents):
 def obtenir_nom_fichiers_discours_presidents(dossier_discours_presidents):
     fichiers_discours_presidents = list_of_files(dossier_discours_presidents, ".txt")
     return fichiers_discours_presidents
-def obtenir_contenu_fichiers_discours_presidents_nettoyes():
+def remplir_dico_fichiers_discours_presidents_depuis_la_liste(liste_noms_fichiers_discours_presidents):
 
-    return
+    for i in range(len(liste_noms_fichiers_discours_presidents)):
+
+        nom_fichier_discours_president = liste_noms_fichiers_discours_presidents[i]
+
+        dico_fichiers_discours_presidents[i+1] = nom_fichier_discours_president
+
+    return dico_fichiers_discours_presidents
 def obtenir_liste_prenom_nom_des_presidents(fichiers_discours_presidents):
 
     # A deplacer dans le fichier "Presidents"
@@ -89,16 +97,17 @@ def obtenir_liste_prenom_nom_des_presidents(fichiers_discours_presidents):
     prenom_nom_des_presidents = creer_liste_prenom_nom_formates(noms_des_presidents)
 
     return prenom_nom_des_presidents
-def remplir_dico_avec_questions_stat_mots_corpus():
+def obtenir_dicos_occurrences_mots_du_president(nom_president, les_dicos_occurrences_mots_corpus):
 
-    # DE: A corriger !
-    # remplir avec le contenu d'un fichier plutot "qu'en dur" !
-    #listbox_stat_mots_corpus.insert(1, "Afficher les mots les MOINS importants dans les discours des présidents")
-    #listbox_stat_mots_corpus.insert(2, "Afficher les mots les PLUS importants dans les discours des présidents")
-    #listbox_stat_mots_corpus.insert(3, "Trouver les mots significatifs les plus répétés par J. Chirac")
-    #listbox_stat_mots_corpus.insert(4,
-    #listbox_stat_mots_corpus.insert(5, "Montrer qui a parler du climat et/ou de l'écologie")
+    dicos_occurrences_mots_president = []
 
-    dico_des_questions_sur_stats_mots_corpus[0] = "Afficher les mots les MOINS importants dans les discours des présidents"
+    # parcourir le dico des fichiers des discours des présidents
+    #for num_fichier, nom_fichier_discours_presidents in les_dicos_occurrences_mots_corpus.items():
 
-    return dico_des_questions_sur_stats_mots_corpus
+        #nom_fichier_discours_presidents_lower = nom_fichier_discours_presidents
+        #nom_fichier_discours_presidents_lower = nom_fichier_discours_presidents_lower.lower()
+
+        #if nom_president in nom_fichier_discours_presidents_lower:
+        #    num_des_discours_du_president.append(num_fichier)
+
+    return dicos_occurrences_mots_president

@@ -1,5 +1,7 @@
 import  os
 import string
+import time
+import tkinter as tk
 def convertir_texte_en_minuscules(fichiers_sources, dossier_destination):
 
     # Convertit les textes des fichiers sources en minuscules et les stocke dans des nouveaux fichiers dans le dossier de destination.
@@ -40,8 +42,8 @@ def nettoyer_texte(texte):
     texte_nettoye = "".join(c if c not in string.punctuation else " " for c in texte)
 
     # Liste des caractères spéciaux à traiter
-    # DE: A corriger ! (Ajouter ";", "!", "?", "...")
-    caracteres_speciaux_a_supprimer = {"'": " ", "-": " "}
+    #caracteres_speciaux_a_supprimer = {"'": " ", "-": " "}
+    caracteres_speciaux_a_supprimer = {"'": " ", "-": " ", ";": " ", "!": " ", "?": " ", "...": " "}
 
     # Traiter les caractères spéciaux
     for caractere, remplacement in caracteres_speciaux_a_supprimer.items():
@@ -78,7 +80,6 @@ def nettoyer_textes_du_dossier(dossier_textes):
             f.write(texte_nettoye)
 
     return
-
 def compter_occurrences_mot(mot, texte):
     count = texte.count(mot)
     return count
@@ -86,8 +87,8 @@ def charger_contenu_fichier(chemin_fichier, extension = ".txt"):
     with open(os.path.join(chemin_fichier, extension), 'r', encoding='utf-8') as file:
         texte = file.read()
         return texte
-
-
-
-
-
+def afficher_texte_progressivement(texte, textbox, delai_entre_lettres=0.02):
+    for lettre in texte:
+        textbox.insert(tk.END, lettre)
+        textbox.update()  # Met à jour l'affichage de la TextBox
+        time.sleep(delai_entre_lettres)

@@ -1,11 +1,13 @@
 import presidents as les_presidents
 import string_manager as sm
 import TF_IDF as tf_idf
-import  traitement_question_reponse as tt_question_reponse
+import traitement_question_reponse as tt_q_r
+import traitement_questions_reponses as tt_quest_rep
 import tkinter as tk
 import math_vecteurs as math_vect
 from gui_manager import *
 from tkinter import *
+from tkinter import messagebox
 
 # region def des elements UI
 window_width = 800
@@ -15,7 +17,7 @@ label_height = 2
 # fenetre principale
 window = creer_fenetre("ChatBot", window_width, window_height)
 
-label_invite_choix_stats_mots_corpus = Label(window) # relief=RAISED
+label_invite_choix_stats_mots_corpus = Label(window, relief=RAISED)
 
 # frame conteneur de la listbox
 frame_list_box = Frame(window)
@@ -26,46 +28,66 @@ listbox_questions_sur_stats_mots_corpus = tk.Listbox(frame_list_box, font=police
 
 label_info_ou = Label(window, relief=RAISED)
 
-textbox_question = Text(window, width=window_width, height=4, font=30, background="lightblue",
+textbox_question = Text(window, width=window_width, height=4, font=30, background="white",
                         foreground="black")
 
-label_info_reponse = Label(window)  # relief=RAISED
+label_info_reponse = Label(window, relief=RAISED)
 
-textbox_reponse = Text(window, width=window_width, height=10, font=30, background="peachpuff",
+# frame conteneur de la textbox_reponse
+frame_textbox_reponse = Frame(window)
+
+textbox_reponse = Text(window, width=window_width, height=10, font=30, wrap='word', background="peachpuff",
                        foreground="firebrick")
 
 # endregion def des elements UI
 
 #region "Commandes du menu"
-def afficher_ui_infos_stats_mots_corpus():
+def ini_ui_infos_stats_mots_corpus():
 
-    # preparer l'ui
-    #frame_list_box.pack_forget()
-
-    return
-
-def afficher_ui_poser_question():
-
-    # preparer l'ui
-    #frame_list_box.pack()
+    # ini l'ui
+    textbox_reponse.delete("1.0", tk.END)
 
     return
+def ini_ui_pour_poser_question():
 
+    contenu = textbox_question.get("1.0", "end-1c")
+
+    # si la textbox question contient quelque chose
+    if contenu != "":
+
+        # demander si user est ok pour l'effacer
+        reponse = messagebox.askquestion("Question", "Effacer l'ancienne question afin de poser une nouvelle question ?")
+
+        if reponse == 'yes':
+            textbox_question.delete("1.0", tk.END)
+
+    # selectionner la texbox (donner le focus afin d'être prêt à saisir la new question)
+    textbox_question.focus_set()
+
+    return
 def quitter():
-
-    window.quit()
-
-    return
+    window.destroy()
 
 #endregion "Commandes du menu"
 
-def chercher_infos_stats_mots_corpus(index_requete):
+def traitement_question_sur_stat_mots_corpus(num_question):
 
-    #les_presidents.dico_questions_stat_mots_corpus
+    # effacer le contenu de la textbox reponse
+    ini_ui_infos_stats_mots_corpus()
+
+    # obtenir la réponse selon la question selectionnée par l'utilisateur
+    reponse = tt_quest_rep.obtenir_reponse_question_sur_stats_mots_corpus(num_question)
+
+    # afficher la réponse progressivement, façon chatGPT
+    if num_question == 1:
+        sm.afficher_texte_progressivement(reponse, textbox_reponse)
+    elif num_question == 2:
+        sm.afficher_texte_progressivement(reponse, textbox_reponse, 0.001)
+    else:
+        sm.afficher_texte_progressivement(reponse, textbox_reponse)
 
     return
-
-def on_listbox_stat_mots_corpus_click(event):
+def on_listbox_questions_sur_stats_mots_corpus_click(event):
 
     # Obtenir l'index de l'élément sélectionné
     selected_index = listbox_questions_sur_stats_mots_corpus.curselection()
@@ -73,16 +95,43 @@ def on_listbox_stat_mots_corpus_click(event):
     # Obtenir le texte de l'élément sélectionné
     selected_text = listbox_questions_sur_stats_mots_corpus.get(selected_index)
 
+    # récupération de l'indice dans le tuple et conversion en int afin de pouvoir incrémenter
+    num_question = selected_index[0]
+
+    # ne pas considerer une question 0, mais toujours commencer par la question 1
+    num_question += 1
+
+    traitement_question_sur_stat_mots_corpus(num_question)
+
     return
-def getText():
+def traitement_question_utilisateur(question):
 
-    # recuperer la question posée par user
-    res = textbox_reponse.get("1.0", "end")
+    # effacer la réponse précédente
+    textbox_reponse.delete("1.0", tk.END)
 
-    print(res)
+    # chercher la réponse à la question de l'utilisateur
+    reponse = tt_quest_rep.traitement_question_utilisateur(question)
+
+    # afficher la réponse façon chatGPT:
+    sm.afficher_texte_progressivement(reponse, textbox_reponse, 0.001)
 
     return
-def creer_ui(dico_questions_stat_mots_corpus):
+def on_textbox_question_enter_pressed(event):
+
+    question = textbox_question.get("1.0", "end-1c")
+
+    traitement_question_utilisateur(question)
+
+    return
+def getText(textbox):
+
+    # recuperer le contenu d'une textbox
+    texte = textbox.get("1.0", "end")
+
+    return texte
+
+    return
+def creer_ui():
 
     window.config(background="peachpuff")
 
@@ -95,8 +144,8 @@ def creer_ui(dico_questions_stat_mots_corpus):
     menuBar.add_cascade(label="Programme", menu=menuFichier)
 
     # Création des sous menus :
-    menuFichier.add_command(label="Infos et stats sur les discours", command=afficher_ui_infos_stats_mots_corpus)
-    menuFichier.add_command(label="Poser une question", command=afficher_ui_poser_question)
+    #menuFichier.add_command(label="Infos et stats sur les discours", command=ini_ui_infos_stats_mots_corpus)
+    menuFichier.add_command(label="Poser une question", command=ini_ui_pour_poser_question)
     menuFichier.add_command(label="Quitter", command=quitter)
     # Configuration de la barre des menus
     window.config(menu=menuBar)
@@ -109,7 +158,6 @@ def creer_ui(dico_questions_stat_mots_corpus):
     label_invite_choix_stats_mots_corpus.config(text="Cliquez sur un des choix disponibles :", anchor="w")
     label_invite_choix_stats_mots_corpus.config(width=window_width)
     label_invite_choix_stats_mots_corpus.config(height=2)
-    label_invite_choix_stats_mots_corpus.config(font=36)
     label_invite_choix_stats_mots_corpus.config(font=36)
     label_invite_choix_stats_mots_corpus.config(background="firebrick")
     label_invite_choix_stats_mots_corpus.config(foreground="peachpuff")
@@ -124,11 +172,6 @@ def creer_ui(dico_questions_stat_mots_corpus):
     #frame_list_box = Frame(window)
     frame_list_box.pack()
 
-    # DE: A corriger !
-    # Remplacer les choix des stats mot du corpus par un fichier
-    # voir le param passé à cette fonction.
-    # mettre les fonctions de recherche dans le module "presidents"
-    # listbox_stat_mots_corpus = Listbox(frame_list_box, font=police)
     listbox_questions_sur_stats_mots_corpus.config(width=85, height=6)
     listbox_questions_sur_stats_mots_corpus.config(background="peachpuff")
     listbox_questions_sur_stats_mots_corpus.config(foreground="firebrick")
@@ -136,8 +179,8 @@ def creer_ui(dico_questions_stat_mots_corpus):
     listbox_questions_sur_stats_mots_corpus.insert(2, "Afficher les mots les PLUS importants dans les discours des présidents")
     listbox_questions_sur_stats_mots_corpus.insert(3, "Trouver les mots significatifs les plus répétés par J. Chirac")
     listbox_questions_sur_stats_mots_corpus.insert(4, "Indiquer le nom des présidents ayant parlés de la Nation ainsi que celui qui en a le plus parlé")
-    listbox_questions_sur_stats_mots_corpus.insert(5, "Montrer qui a parler du climat et/ou de l'écologie")
-    listbox_questions_sur_stats_mots_corpus.bind("<ButtonRelease-1>", on_listbox_stat_mots_corpus_click)
+    listbox_questions_sur_stats_mots_corpus.insert(5, "Montrer qui a parlé du climat et/ou de l'écologie")
+    listbox_questions_sur_stats_mots_corpus.bind("<ButtonRelease-1>", on_listbox_questions_sur_stats_mots_corpus_click)
 
     # Création de la barre de défilement de la listbox
     scrollbar = Scrollbar(frame_list_box, command=listbox_questions_sur_stats_mots_corpus.yview)
@@ -160,6 +203,8 @@ def creer_ui(dico_questions_stat_mots_corpus):
     label_info_ou.pack(padx=4, pady=2)
 
     textbox_question.pack(padx=4, pady=2)
+    # appel de la fonction lors de l'appuie sur la touche "Entrée"
+    textbox_question.bind('<Return>', on_textbox_question_enter_pressed)
 
     # label info "Réponse:"
     label_info_reponse.config(text="Réponse :", anchor="w")
@@ -182,13 +227,18 @@ def creer_ui(dico_questions_stat_mots_corpus):
 def main():
 
     # obtenir les fichiers des discours des presidents
-    les_presidents.noms_fichiers_discours_presidents = les_presidents.obtenir_nom_fichiers_discours_presidents(les_presidents.dossier_discours_presidents)
+    les_presidents.liste_noms_fichiers_discours_presidents = les_presidents.obtenir_nom_fichiers_discours_presidents(les_presidents.dossier_discours_presidents)
+
+    les_presidents.nombre_docs_fichiers_discours_presidents = len(les_presidents.liste_noms_fichiers_discours_presidents)
+
+    # remplir le dico avec les noms des fichiers du corpus et les numéroter en s'affranchissant de la base 0
+    les_presidents.remplir_dico_fichiers_discours_presidents_depuis_la_liste(les_presidents.liste_noms_fichiers_discours_presidents)
 
     # obtenir le nom et le prénom des présidents
-    prenom_nom_des_presidents = les_presidents.obtenir_liste_prenom_nom_des_presidents(les_presidents.noms_fichiers_discours_presidents)
+    prenom_nom_des_presidents = les_presidents.obtenir_liste_prenom_nom_des_presidents(les_presidents.liste_noms_fichiers_discours_presidents)
 
     # Convertir les fichiers des discours des présidents en minuscules et les stocker dans le dossier "cleaned"
-    sm.convertir_texte_en_minuscules(les_presidents.noms_fichiers_discours_presidents, les_presidents.dossier_discours_presidents_nettoyes)
+    sm.convertir_texte_en_minuscules(les_presidents.liste_noms_fichiers_discours_presidents, les_presidents.dossier_discours_presidents_nettoyes)
     # Nettoyer les fichiers des discours des présidents
     sm.nettoyer_textes_du_dossier(les_presidents.dossier_discours_presidents_nettoyes)
 
@@ -211,43 +261,8 @@ def main():
     # Colonnes = mots (unique) du corpus
     tf_idf.matrice_tf_idf_corpus_transposee = tf_idf.transpose_matrice(tf_idf.matrice_tf_idf_corpus)
 
-    # TEST SEULEMENT:
-
-    # Une question a été posé par user:
-
-    # 1) Nettoyer la question
-    question = "Quel présidents l'année en cours qu'aurait pu être présidents et qu'on a vu concerné par le climat parle le plus du climat dans son discours"
-    question = sm.nettoyer_texte(question)
-
-    # 2) creer le vecteur tf_idf_question par copie de la matrice_tf_idf_corpus_transposee.
-    # Elle contient uniquement 2 lignes (mots du corpus et score tf-idf de ces mots)
-    # et M colonnes (nbre total de mots)
-    tf_idf.vecteur_tf_idf_question = tf_idf.ini_matrice_tf_idf_question(tf_idf.matrice_tf_idf_corpus_transposee)
-
-    # 3) créer le vecteur_tf_idf_question
-    tf_idf.vecteur_tf_idf_question = tf_idf.creer_vecteur_tf_idf_question(question, tf_idf.vecteur_tf_idf_question, tf_idf.matrice_idf_corpus)
-
-    # 4) calcul du produit scalaire entre matrice_tf_idf_question et matrice_tf_idf_corpus_transposee[ligne]
-         # (ici en test, mais il faudra le faire systématiquement pour chaque doc dans matrice_tf_idf_corpus_transposee)
-    vecteur_scalaire = 0
-    num_doc = 1
-    vecteur_scalaire = math_vect.calculer_produit_scalaire_vecteurs(tf_idf.vecteur_tf_idf_question[tf_idf.matrice_tf_idf_question_num_ligne_score_tf_idf], tf_idf.matrice_tf_idf_corpus_transposee[num_doc])
-
-    # 5) calcul de la norme d'un vecteur
-    norme_vecteur = 0
-    norme_vecteur = math_vect.calculer_norme_vecteur(tf_idf.vecteur_tf_idf_question[tf_idf.matrice_tf_idf_question_num_ligne_score_tf_idf])
-
-    # 6) trouver le doc le plus pertinent à la question posée
-    num_doc_pertinent = tt_question_reponse.trouver_doc_le_plus_pertinent_a_question(tf_idf.vecteur_tf_idf_question, tf_idf.matrice_tf_idf_corpus_transposee, les_presidents.noms_fichiers_discours_presidents)
-
-    #nom_doc_pertinent = obtenir_nom_doc(num_doc_pertinent)
-
-    # FIN TEST SEULEMENT
-
-    les_presidents.dico_des_questions_sur_stats_mots_corpus = les_presidents.remplir_dico_avec_questions_stat_mots_corpus()
-
     # note importante: toujours creer l'ui à la fin du process car des que la boucle de window est créée
     # on sort de celui ci et le reste du code situé après la création de l'ui n'est plus executé
-    creer_ui(les_presidents.dico_des_questions_sur_stats_mots_corpus)
+    creer_ui()
 
 main()

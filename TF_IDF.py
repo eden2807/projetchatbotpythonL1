@@ -17,8 +17,8 @@ matrice_idf_discours_presidents_num_col_mot = 0
 matrice_tf_num_col_score_idf = 1
 matrice_transposée_idf_discours_presidents_num_ligne_mot = 0
 vecteur_tf_idf_question = []
-matrice_tf_idf_question_num_ligne_mot = 0
-matrice_tf_idf_question_num_ligne_score_tf_idf = 1
+vecteur_tf_idf_question_num_ligne_mot = 0
+vecteur_tf_idf_question_num_ligne_score_tf_idf = 1
 mot_existant = 1
 
 ###############################################################################################"
@@ -330,7 +330,7 @@ def transpose_matrice(matrice):
     # a ce stade, nous avons une matrice transposee contenant le nombre de lignes voulues
     # leur nombre correspondant au nombre de docs existants
 
-    # ajouter les toutes les colonnes (mots) dans la matrice transposee
+    # ajouter toutes les colonnes (mots) dans la matrice transposee
     for ligne in range(len(matrice)):
          mot = matrice[ligne][0]
          ligne_matrice_transposee += [mot]
@@ -374,7 +374,7 @@ def ini_matrice_tf_idf_question(matrice_tf_idf_corpus_transposee):
 
     matrice_tf_idf_question.append(copy.deepcopy(matrice_tf_idf_corpus_transposee[matrice_tf_idf_corpus_transposee_num_ligne_mot]))
 
-    # ajouter la ligne qui contiendra les score tf-idf de la question (ini à "0" pour le moment)
+    # ajouter la ligne qui contiendra les score tf-idf pour les mots de la question (ini à "0" pour le moment)
     ligne_vierge = [0] * len(matrice_tf_idf_corpus_transposee[0])
     matrice_tf_idf_question.append(ligne_vierge)
 
@@ -388,12 +388,12 @@ def creer_vecteur_tf_idf_question(question, vecteur_tf_idf_question, matrice_idf
     for i in range(len(liste_mots_question)):
         mot = liste_mots_question[i]
         # ...verifier si ce mot est inclus dans le corpus, donc dans une des col de matrice_tf_idf_question
-        if mot in vecteur_tf_idf_question[matrice_tf_idf_question_num_ligne_mot]:
+        if mot in vecteur_tf_idf_question[vecteur_tf_idf_question_num_ligne_mot]:
             # le mot existe, le localiser
-            for j in range(len(vecteur_tf_idf_question[matrice_tf_idf_question_num_ligne_mot])):
-                # incrémenter le tf du mot
-                if (vecteur_tf_idf_question[matrice_tf_idf_question_num_ligne_mot][j] == mot):
-                    vecteur_tf_idf_question[matrice_tf_idf_question_num_ligne_score_tf_idf][j] += 1
+            for j in range(len(vecteur_tf_idf_question[vecteur_tf_idf_question_num_ligne_mot])):
+                # incrémenter le tf du mot dans le vecteur de la question
+                if (vecteur_tf_idf_question[vecteur_tf_idf_question_num_ligne_mot][j] == mot):
+                    vecteur_tf_idf_question[vecteur_tf_idf_question_num_ligne_score_tf_idf][j] += 1
                     j = 0
                     break
 
@@ -412,12 +412,26 @@ def creer_vecteur_tf_idf_question(question, vecteur_tf_idf_question, matrice_idf
                 # score idf du mot localisé
                 score_idf = matrice_idf_corpus[x][matrice_tf_idf_corpus_num_ligne_score]
                 # calculer le tf-idf du mot en multipliant son tf par le score idf trouvé
-                for n in range(len(vecteur_tf_idf_question[matrice_tf_idf_question_num_ligne_mot])):
+                for n in range(len(vecteur_tf_idf_question[vecteur_tf_idf_question_num_ligne_mot])):
                     # DE: A corriger ! : Remplacer par matrices_manager.trouver_num_col(matrice, num_ligne, val_a_chercher)
-                    if vecteur_tf_idf_question[matrice_tf_idf_question_num_ligne_mot][n] == mot:
-                        vecteur_tf_idf_question[matrice_tf_idf_question_num_ligne_score_tf_idf][n] *= score_idf
+                    if vecteur_tf_idf_question[vecteur_tf_idf_question_num_ligne_mot][n] == mot:
+                        vecteur_tf_idf_question[vecteur_tf_idf_question_num_ligne_score_tf_idf][n] *= score_idf
                         n = 0
                         x = 0
                         break
 
     return vecteur_tf_idf_question
+def obtenir_mot_avec_score_tf_idf_le_plus_eleve(vecteur_question):
+
+    mot_significatif = ""
+    score_mot_significatif = 0
+
+    num_ligne_mots = vecteur_tf_idf_question_num_ligne_mot
+    num_ligne_valeur = vecteur_tf_idf_question_num_ligne_score_tf_idf
+
+    for num_col in range(len(vecteur_question[num_ligne_valeur])):
+        if vecteur_question[num_ligne_valeur][num_col] > score_mot_significatif:
+            score_mot_significatif = vecteur_question[num_ligne_valeur][num_col]
+            mot_significatif = vecteur_question[num_ligne_mots][num_col]
+
+    return mot_significatif
