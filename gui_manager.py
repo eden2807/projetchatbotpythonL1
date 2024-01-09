@@ -40,3 +40,10 @@ def creer_menu(window):
 
     # Configuration de la barre des menus
     window.config(menu=menuBar)
+
+def getText(textbox):
+
+    # recuperer le contenu d'une textbox
+    texte = textbox.get("1.0", "end")
+
+    return texte

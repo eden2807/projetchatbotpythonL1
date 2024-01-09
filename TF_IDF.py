@@ -15,11 +15,12 @@ matrice_tf_idf_corpus_transposee_num_ligne_mot = 0
 matrice_tf_discours_presidents_num_col_mot = 0
 matrice_idf_discours_presidents_num_col_mot = 0
 matrice_tf_num_col_score_idf = 1
-matrice_transposée_idf_discours_presidents_num_ligne_mot = 0
+matrice_transposee_idf_discours_presidents_num_ligne_mot = 0
 vecteur_tf_idf_question = []
 vecteur_tf_idf_question_num_ligne_mot = 0
 vecteur_tf_idf_question_num_ligne_score_tf_idf = 1
 mot_existant = 1
+ini = 0
 
 ###############################################################################################"
 # ADAM:
@@ -402,22 +403,21 @@ def creer_vecteur_tf_idf_question(question, vecteur_tf_idf_question, matrice_idf
     i = 0
     for i in range(len(liste_mots_question)):
         mot = liste_mots_question[i]
-        x = 0
+        num_col = 0
         n = 0
         score_idf = -1
         # chercher ce mot dans la matrice_idf_corpus pour trouver son score IDF
-        for x in range(len(matrice_idf_corpus)):
+        for num_col in range(len(matrice_idf_corpus)):
             if score_idf != -1: break
-            if matrice_idf_corpus[x][matrice_tf_idf_corpus_num_ligne_mot] == mot:
+            if matrice_idf_corpus[matrice_tf_idf_corpus_num_ligne_mot][num_col] == mot:
                 # score idf du mot localisé
-                score_idf = matrice_idf_corpus[x][matrice_tf_idf_corpus_num_ligne_score]
+                score_idf = matrice_idf_corpus[matrice_tf_idf_corpus_num_ligne_score][num_col]
                 # calculer le tf-idf du mot en multipliant son tf par le score idf trouvé
                 for n in range(len(vecteur_tf_idf_question[vecteur_tf_idf_question_num_ligne_mot])):
-                    # DE: A corriger ! : Remplacer par matrices_manager.trouver_num_col(matrice, num_ligne, val_a_chercher)
                     if vecteur_tf_idf_question[vecteur_tf_idf_question_num_ligne_mot][n] == mot:
                         vecteur_tf_idf_question[vecteur_tf_idf_question_num_ligne_score_tf_idf][n] *= score_idf
                         n = 0
-                        x = 0
+                        num_col = 0
                         break
 
     return vecteur_tf_idf_question

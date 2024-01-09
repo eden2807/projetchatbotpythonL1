@@ -1,3 +1,5 @@
+
+import TF_IDF as tf_idf
 from files_manager import *
 
 # constantes
@@ -7,7 +9,7 @@ liste_noms_fichiers_discours_presidents = []
 dico_fichiers_discours_presidents = {} # clé = num fichier, valeur = nom du fichier
 nombre_docs_fichiers_discours_presidents = 0
 noms_des_presidents = []
-dico_des_questions_sur_stats_mots_corpus = {}
+#dico_des_questions_sur_stats_mots_corpus = {}
 
 def creer_liste_prenom_nom_formates(noms_des_presidents):
     # DE: A corriger !
@@ -87,7 +89,6 @@ def remplir_dico_fichiers_discours_presidents_depuis_la_liste(liste_noms_fichier
     return dico_fichiers_discours_presidents
 def obtenir_liste_prenom_nom_des_presidents(fichiers_discours_presidents):
 
-    # A deplacer dans le fichier "Presidents"
     for fichier in fichiers_discours_presidents:
         nom_president = extraire_nom_president(fichier)
         if nom_president not in noms_des_presidents:
@@ -97,17 +98,240 @@ def obtenir_liste_prenom_nom_des_presidents(fichiers_discours_presidents):
     prenom_nom_des_presidents = creer_liste_prenom_nom_formates(noms_des_presidents)
 
     return prenom_nom_des_presidents
-def obtenir_dicos_occurrences_mots_du_president(nom_president, les_dicos_occurrences_mots_corpus):
 
-    dicos_occurrences_mots_president = []
+def obtenir_liste_nom_des_presidents(fichiers_discours_presidents):
 
-    # parcourir le dico des fichiers des discours des présidents
-    #for num_fichier, nom_fichier_discours_presidents in les_dicos_occurrences_mots_corpus.items():
+    for fichier in fichiers_discours_presidents:
+        nom_president = extraire_nom_president(fichier)
+        if nom_president not in noms_des_presidents:
+            noms_des_presidents.append(nom_president)
 
-        #nom_fichier_discours_presidents_lower = nom_fichier_discours_presidents
-        #nom_fichier_discours_presidents_lower = nom_fichier_discours_presidents_lower.lower()
+    return noms_des_presidents
 
-        #if nom_president in nom_fichier_discours_presidents_lower:
-        #    num_des_discours_du_president.append(num_fichier)
+def obtenir_les_dicos_occurrences_mots_pour_un_president(nom_president, les_dicos_occurrences_mots_corpus):
+
+    nom_president_lower = ""
+    dicos_occurrences_mots_president = {}
+
+    # être indépendant des min/maj en mettant tout en min
+    nom_president_lower = nom_president.lower()
+
+    # parcourir le dico des dicos occurrences mots corpus de chaque président
+    for nom_fichier_discours_presidents, dico in les_dicos_occurrences_mots_corpus.items():
+
+        # être indépendant des min/maj en mettant tout en min
+        nom_fichier_discours_presidents_lower = nom_fichier_discours_presidents
+        nom_fichier_discours_presidents_lower = nom_fichier_discours_presidents_lower.lower()
+
+        if nom_president_lower in nom_fichier_discours_presidents_lower:
+            dicos_occurrences_mots_president[nom_fichier_discours_presidents] = dico
 
     return dicos_occurrences_mots_president
+
+
+def obtenir_les_mots_les_moins_importants_des_discours_des_presidents():
+
+    # "Afficher les mots les MOINS importants dans les discours des présidents"
+    # le mot est non important si son TF-IDF = 0 pour chaque fichiers
+
+    liste_mots_moins_importants = []
+    mot_courant = ""
+    reponse = ""
+    nb_lignes_fichiers = nombre_docs_fichiers_discours_presidents + 1
+
+    for num_mot in range(
+            len(tf_idf.matrice_tf_idf_corpus_transposee[tf_idf.matrice_tf_idf_corpus_transposee_num_ligne_mot])):
+
+        mot_courant = tf_idf.matrice_tf_idf_corpus_transposee[tf_idf.matrice_tf_idf_corpus_transposee_num_ligne_mot][
+            num_mot]
+
+        # examiner le score TF-IDF de ce mot pour chaque fichier
+        for num_fichier in range(1, nb_lignes_fichiers):
+
+            # score > 0 pour ce mot, il ne fait pas partie des moins importants, passer au mot suivant
+            if tf_idf.matrice_tf_idf_corpus_transposee[num_fichier][num_mot] != 0.0:
+                break
+            # pas de score pour ce mot, il est tjrs à 0 ds ts les docs, il fait partie des moins importants
+            if num_fichier == (nb_lignes_fichiers - 1):
+                liste_mots_moins_importants.append(mot_courant)
+
+    if len(liste_mots_moins_importants) == 0:
+        reponse = ""
+        return reponse
+
+    # concatener tous les mots dans la chaine en les séparant par une virgule
+    string_mots_moins_importants = ', '.join(liste_mots_moins_importants)  # présentation en ligne
+    # string_mots_moins_importants = ', \n'.join(liste_mots_moins_importants) # presentation en colonne
+
+    string_mots_moins_importants += "."
+
+    reponse = "Liste des " + str(
+        len(liste_mots_moins_importants)) + " mots les moins importants dans les discours des présidents : " + '\n\n' + string_mots_moins_importants
+
+    return reponse, liste_mots_moins_importants
+
+
+def obtenir_les_mots_les_plus_importants_des_discours_des_presidents():
+
+    # "Afficher les mots les PLUS importants dans les discours des présidents".
+    # Parcourir la matrice et stocker dans un dico tous les mots ayant un TF-IDF > 0.
+    # Les clés de ce dico sont les mots (uniques) et leur valeurs sont les scores.
+    # Trier ensuite le dico par ordre décroissant puis afficher les n premiers mots les plus importants.
+
+    dico_mots_TF_IDF = {}
+    nombre_mots_max_a_afficher = 100
+    mot_courant = ""
+    score_mot_courant = 0
+    chaine_resultat = ""
+    reponse = ""
+
+    nb_lignes_fichiers = nombre_docs_fichiers_discours_presidents + 1
+
+    for num_mot in range(
+            len(tf_idf.matrice_tf_idf_corpus_transposee[tf_idf.matrice_tf_idf_corpus_transposee_num_ligne_mot])):
+
+        mot_courant = tf_idf.matrice_tf_idf_corpus_transposee[tf_idf.matrice_tf_idf_corpus_transposee_num_ligne_mot][
+            num_mot]
+
+        score_mot_courant = 0
+
+        # examiner le score TF-IDF de ce mot pour chaque fichier
+        for num_fichier in range(1, nb_lignes_fichiers):
+
+            score_mot_courant += tf_idf.matrice_tf_idf_corpus_transposee[num_fichier][num_mot]
+
+            # score > 0 pour ce mot, il fait potentiellement  partie des plus importants
+            if num_fichier == (nb_lignes_fichiers - 1) and score_mot_courant > 0:
+                # ajouter le mot (clé) et le score du mot (value) dans le dico
+                # Note: arrondir à 2 chiffres apres virgule, sinon les calculs en float peuvent avoir cet aspect: 0.6 + 1.2 = 1.7999999 !
+                dico_mots_TF_IDF[mot_courant] = round(score_mot_courant, 2)
+
+    if len(dico_mots_TF_IDF) == 0:
+        reponse = ""
+        return reponse
+
+    # tri dans le dico des mots avec TF-IDF élevés par ordre décroissant (les scores les + élevés sont donc les premiers)
+
+    # Obtenir une liste triée de tuples (clé, valeur) basée sur les valeurs
+    items_tries = sorted(dico_mots_TF_IDF.items(), key=lambda x: x[1], reverse=True)
+
+    # limiter à n items
+    items_tries_limites = items_tries[:nombre_mots_max_a_afficher]
+
+    chaine_resultat = '\n'
+    chaine_resultat = '\n' + "Format:" + '\n'
+    chaine_resultat += "mot = score TF-IDF" + '\n\n'
+    chaine_resultat += "'"
+
+    # Construire une chaîne à partir de la liste triée
+    for cle, valeur in items_tries_limites:
+        chaine_resultat += f"{cle} = {valeur}'\n'"
+
+    # Supprimer la virgule, l'espace et le retour à la ligne à la fin de la chaîne
+    chaine_resultat = chaine_resultat[:-5]
+
+    reponse = "Liste des " + str(
+        nombre_mots_max_a_afficher) + " premiers mots des discours des présidents avec les scores TF-IDF les plus élevés et classés par ordre décroissants : " + '\n' + chaine_resultat
+
+    return reponse
+
+def obtenir_les_mots_importants_les_plus_employes_par_un_president(nom_president, les_dicos_occurrences_mots_corpus, nombre_mots_a_trouver):
+
+    dicos_occurrences_mots_corpus = {}
+    dico_mots_les_plus_utilises_par_ce_president = {}
+    liste_mots_moins_importants = []
+
+    # obtenir le ou les dico(s) occurrences mots de ce president
+    dicos_occurrences_mots_du_president = obtenir_les_dicos_occurrences_mots_pour_un_president(nom_president, les_dicos_occurrences_mots_corpus)
+
+    if len(dicos_occurrences_mots_du_president) == 0:
+        return
+
+    # obtenir la liste des mots les moins importants.
+    # rappel: un mot est dit non important si son score tf-idf = 0 dans tous les fichiers
+    rep, liste_mots_moins_importants = obtenir_les_mots_les_moins_importants_des_discours_des_presidents()
+
+    # pour chaque dico, trier les mots des plus employes aux moins employes
+    for nom_fichier_discours_presidents, dico in dicos_occurrences_mots_du_president.items():
+
+        # Obtenir une liste triée de tuples (mot, nb occurrence mot) basée sur le nb occurrences de ce mot de la + élevée à la - élevée
+        mots_tries = sorted(dico.items(), key=lambda x: x[1], reverse=True)
+
+        # ici : parcourir les n premiers mots (determiné par 'nombre_mots_a_trouver') de la liste triée et les stocker dans un dico
+        for i in range(len(mots_tries)):
+
+            mot_courant = mots_tries[i][0]
+            val_courante = mots_tries[i][1]
+
+            # verifier que le mot soit significatif avant de l'ajouter (score tf-idf pr ts les fichiers > 0)
+            if mot_courant in liste_mots_moins_importants:
+                continue
+
+            # ajouter le mot reconnu comme étant significatif
+            if dico_mots_les_plus_utilises_par_ce_president.get(mot_courant):
+                dico_mots_les_plus_utilises_par_ce_president[mot_courant] += val_courante
+            else:
+                dico_mots_les_plus_utilises_par_ce_president[mot_courant] = val_courante
+
+            # nombre de mots à trouver atteint ?
+            if i == nombre_mots_a_trouver:
+                break
+
+    # aucun mot trouvé, le signaler et sortir
+    if len(dico_mots_les_plus_utilises_par_ce_president) == 0:
+        reponse = ""
+
+    # A ce stade, des mots on été trouvé. Les trier par ordre décroissant sur le nb de prononciation
+    res = ""
+
+    mots_les_plus_utilises_tries = sorted(dico_mots_les_plus_utilises_par_ce_president.items(), key=lambda x: x[1], reverse=True)
+
+    # Construire une chaîne à partir de la liste triée des mots
+    for mot, score in mots_les_plus_utilises_tries:
+        res += f"{mot} = {score}'\n'"
+
+    # Supprimer la virgule, l'espace et le retour à la ligne à la fin de la chaîne
+    res = res[:-5]
+
+    return "Liste des mots importants les plus utilisés par le président " + nom_president + ":" + "\n\n" + res
+
+
+def creer_dicos_stats_sur_mot_employe_par_les_presidents(mot_a_trouver, les_dicos_occurrences_mots_corpus, liste_nom_des_presidents):
+
+    # pour chaque dico existant et donc pour chaque président,
+    liste_nom_des_presidents = obtenir_liste_nom_des_presidents(liste_nom_des_presidents)
+
+    nom_president = ""
+
+    # obtenir le ou les dico(s) occurrences mots de ce president
+    dicos_occurrences_mots_du_president = obtenir_les_dicos_occurrences_mots_pour_un_president(nom_president,
+                                                                                               les_dicos_occurrences_mots_corpus)
+
+    if len(dicos_occurrences_mots_du_president) == 0:
+        return
+
+
+
+    # obtenir la liste des mots les moins importants.
+    # rappel: un mot est dit non important si son score tf-idf = 0 dans tous les fichiers
+    #rep, liste_mots_moins_importants = obtenir_les_mots_les_moins_importants_des_discours_des_presidents()
+
+    # pour chaque dico, trier les mots des plus employes aux moins employes
+    #for nom_fichier_discours_presidents, dico in dicos_occurrences_mots_du_president.items():
+
+        # trouver le mot en question si existant et le conserver dans un dico dont la clé
+        # est le nom du président et la valeur est le nb occurrences du mot pr ce président
+
+
+    return
+
+
+def trouver_presidents_ayant_employe_un_terme():
+
+    return
+
+
+def trouver_president_ayant_le_plus_employer_un_terme():
+
+    return
+

@@ -4,138 +4,101 @@ import string_manager as sm
 import TF_IDF as tf_idf
 import math_vecteurs as math_vect
 import presidents as les_presidents
+import traitement_questions_reponses as tt_quest_rep
+import random
+from tkinter import messagebox
 
-#region "traitement question prédéfinies sur stats discours des presidents"
+dico_intros_avant_reponse_trouvee = {}
+
+# region "traitement question prédéfinies sur stats discours des presidents"
 def obtenir_les_mots_les_moins_importants_des_discours_des_presidents():
-    # "Afficher les mots les MOINS importants dans les discours des présidents"
-    # le mot est non important si son TF-IDF = 0 pour chaque fichiers
+
+    reponse = ""
     liste_mots_moins_importants = []
-    mot_courant = ""
-    reponse = ""
-    nb_lignes_fichiers = les_presidents.nombre_docs_fichiers_discours_presidents + 1
+    reponse_complete = ""
 
-    for num_mot in range(len(tf_idf.matrice_tf_idf_corpus_transposee[tf_idf.matrice_tf_idf_corpus_transposee_num_ligne_mot])):
+    reponse, liste_mots_moins_importants = les_presidents.obtenir_les_mots_les_moins_importants_des_discours_des_presidents()
 
-        mot_courant = tf_idf.matrice_tf_idf_corpus_transposee[tf_idf.matrice_tf_idf_corpus_transposee_num_ligne_mot][num_mot]
-
-        # examiner le score TF-IDF de ce mot pour chaque fichier
-        for num_fichier in range(1, nb_lignes_fichiers):
-
-            # score > 0 pour ce mot, il ne fait pas partie des moins importants, passer au mot suivant
-            if tf_idf.matrice_tf_idf_corpus_transposee[num_fichier][num_mot] != 0.0:
-                break
-            # pas de score pour ce mot, il est tjrs à 0 ds ts les docs, il fait partie des moins importants
-            if num_fichier == (nb_lignes_fichiers - 1):
-                liste_mots_moins_importants.append(mot_courant)
-
-    if len(liste_mots_moins_importants) == 0:
-        reponse = "Aucun mots d'importance moindre n'a été trouvé"
+    if reponse == "":
+        reponse = "Aucun mots d'importance moindre n'a été trouvé."
         return reponse
 
-    # concatener tous les mots dans la chaine en les séparant par une virgule
-    string_mots_moins_importants = ', '.join(liste_mots_moins_importants) # présentation en ligne
-    # string_mots_moins_importants = ', \n'.join(liste_mots_moins_importants) # presentation en colonne
+    phrase_intro = tt_quest_rep.obtenir_aleatoirement_phrase_intro_avant_reponse_trouvee()
+    reponse_complete += phrase_intro + "\n\n" + reponse
 
-    string_mots_moins_importants += "."
+    return reponse_complete
 
-    reponse = "Voici la liste des " + str(len(liste_mots_moins_importants)) + " mots les moins importants dans les discours des présidents : " + '\n\n' + string_mots_moins_importants
 
-    return reponse
-def obtenir_les_mots_avec_TF_IDF_les_plus_eleves_des_discours_des_presidents():
+def obtenir_les_mots_les_plus_importants_des_discours_des_presidents():
 
-    # "Afficher les mots les PLUS importants dans les discours des présidents".
-    # Parcourir la matrice et stocker dans un dico tous les mots ayant un TF-IDF > 0.
-    # Les clés de ce dico sont les mots (uniques) et leur valeurs sont les scores.
-    # Trier ensuite le dico par ordre décroissant puis afficher les n premiers mots les plus importants.
-
-    dico_mots_TF_IDF = {}
-    nombre_mots_max_a_afficher = 100
-    mot_courant = ""
-    score_mot_courant = 0
-    chaine_resultat = ""
     reponse = ""
-    nb_lignes_fichiers = les_presidents.nombre_docs_fichiers_discours_presidents + 1
+    reponse_complete = ""
 
-    for num_mot in range(len(tf_idf.matrice_tf_idf_corpus_transposee[tf_idf.matrice_tf_idf_corpus_transposee_num_ligne_mot])):
+    reponse = les_presidents.obtenir_les_mots_les_plus_importants_des_discours_des_presidents()
 
-        mot_courant = tf_idf.matrice_tf_idf_corpus_transposee[tf_idf.matrice_tf_idf_corpus_transposee_num_ligne_mot][num_mot]
-
-        score_mot_courant = 0
-
-        # examiner le score TF-IDF de ce mot pour chaque fichier
-        for num_fichier in range(1, nb_lignes_fichiers):
-
-            score_mot_courant += tf_idf.matrice_tf_idf_corpus_transposee[num_fichier][num_mot]
-
-            # score > 0 pour ce mot, il fait potentiellement  partie des plus importants
-            if num_fichier == (nb_lignes_fichiers - 1) and score_mot_courant > 0:
-
-                # ajouter le mot (clé) et le score du mot (value) dans le dico
-                # Note: arrondir à 2 chiffres apres virgule, sinon les calculs en float peuvent avoir cet aspect: 0.6 + 1.2 = 1.7999999 !
-                dico_mots_TF_IDF[mot_courant] = round(score_mot_courant, 2)
-
-    if len(dico_mots_TF_IDF) == 0:
-        reponse = "Aucun mots avec un score TF-IDF positif n'a été trouvé"
+    if reponse == "":
+        reponse = "Aucun mots importants n'a été trouvé."
         return reponse
 
-    # tri dans le dico des mots avec TF-IDF élevés par ordre décroissant (les scores les + élevés sont donc les premiers)
+    phrase_intro = tt_quest_rep.obtenir_aleatoirement_phrase_intro_avant_reponse_trouvee()
+    reponse_complete = phrase_intro + "\n\n" + reponse
 
-    # Obtenir une liste triée de tuples (clé, valeur) basée sur les valeurs
-    items_tries = sorted(dico_mots_TF_IDF.items(), key=lambda x: x[1], reverse=True)
+    return reponse_complete
 
-    # limiter à n items
-    items_tries_limites = items_tries[:nombre_mots_max_a_afficher]
+def obtenir_les_mots_importants_les_plus_employes_par_un_president(nom_president, les_dicos_occurrences_mots_corpus, nombre_mots_a_trouver = 50):
 
-    chaine_resultat = '\n'
-    chaine_resultat = '\n' + "Format:" + '\n'
-    chaine_resultat += "mot = score TF-IDF" + '\n\n'
-    chaine_resultat += "'"
+    reponse = ""
+    reponse_complete = ""
 
-    # Construire une chaîne à partir de la liste triée
-    for cle, valeur in items_tries_limites:
-        chaine_resultat += f"{cle} = {valeur}'\n'"
+    reponse = les_presidents.obtenir_les_mots_importants_les_plus_employes_par_un_president(nom_president, les_dicos_occurrences_mots_corpus, 50)
 
-    # Supprimer la virgule, l'espace et le retour à la ligne à la fin de la chaîne
-    chaine_resultat = chaine_resultat[:-5]
+    if reponse == "":
+        reponse = "Désolé, il n'y a aucun résultat pour le président " + nom_president
+        return reponse
 
-    reponse = "Voici la liste des " + str(nombre_mots_max_a_afficher) + " premiers mots des discours des présidents avec les scores TF-IDF les plus élevés et classés par ordre décroissants : " + '\n' + chaine_resultat
+    phrase_intro = tt_quest_rep.obtenir_aleatoirement_phrase_intro_avant_reponse_trouvee()
+    reponse_complete = phrase_intro + "\n\n" + reponse
 
-    return reponse
-def obtenir_les_mots_significatifs_les_plus_repetes_par_president(nom_president, les_dicos_occurrences_mots_corpus):
+    return reponse_complete
 
-    # trouver les dicos propres  president passé en param
-    dicos_dicos_occurrences_mots_president = les_presidents.obtenir_dicos_occurrences_mots_du_president(nom_president)
-
-    return dicos_dicos_occurrences_mots_president
-def trouver_presidents_ayant_prononce_x_fois_un_terme(terme, les_dicos_occurrences_mots_corpus):
-
+def obtenir_presidents_ayant_prononce_un_terme(liste_termes, les_dicos_occurrences_mots_corpus):
     # parcourir tous les dicos de tous les présidents et, pour chacun, noter le nombre de fois que le terme
     # passé en param apparait
+    return
 
-
+def obtenir_le_president_ayant_le_plus_prononce_un_terme(terme, les_dicos_occurrences_mots_corpus):
 
     return
 
-def obtenir_reponse_question_sur_stats_mots_corpus(num_question):
+def obtenir_reponse_sur_stats_mots_corpus(num_question):
 
     reponse = ""
+
+    liste_termes = ["climat", "ecologie", "écologie"]
 
     if num_question == 1:
         reponse = obtenir_les_mots_les_moins_importants_des_discours_des_presidents()
     elif num_question == 2:
-        reponse = obtenir_les_mots_avec_TF_IDF_les_plus_eleves_des_discours_des_presidents()
+        reponse = obtenir_les_mots_les_plus_importants_des_discours_des_presidents()
     elif num_question == 3:
         # Trouver les mots significatifs les plus répétés par J. Chirac
-        reponse = obtenir_les_mots_significatifs_les_plus_repetes_par_president("chirac", tf_idf.les_dicos_occurrences_mots_corpus)
+        reponse = obtenir_les_mots_importants_les_plus_employes_par_un_president("chirac", tf_idf.les_dicos_occurrences_mots_corpus, 50)
+    elif num_question == 4:
+        reponse = obtenir_le_president_ayant_le_plus_prononce_un_terme("nation", tf_idf.les_dicos_occurrences_mots_corpus)
+    elif num_question == 5:
+        reponse = obtenir_presidents_ayant_prononce_un_terme(liste_termes, tf_idf.les_dicos_occurrences_mots_corpus)
+    else:
+        messagebox.showinfo("Information","Cette fonctionnalité n'est pas encore implémentée")
 
     return reponse
-#endregion "traitement question prédéfinies sur stats discours des presidents"
 
 
-#region "traitement question utilisateur"
+# endregion "traitement question prédéfinies sur stats discours des presidents"
+
+
+# region "traitement question utilisateur"
 def trouver_doc_le_plus_pertinent_a_question(vecteur_tf_idf_question, matrice_tf_idf_corpus_transposee,
                                              dico_noms_fichiers_discours_presidents):
-
     # pour chaque fichiers du corpus dans la matrice
     num_doc_pertinent = 0
     score_similarite = 0.0
@@ -156,21 +119,50 @@ def trouver_doc_le_plus_pertinent_a_question(vecteur_tf_idf_question, matrice_tf
             num_doc_pertinent = num_doc
 
     return num_doc_pertinent
+
+
+def generation_reponse_utilisateur_depuis_texte(mot_specifique, nom_doc_pertinent):
+
+    mot_specifique_pas_trouve = 0
+
+    # ouvrir le doc susceptible de contenir la réponse
+    texte = fm.lire_contenu_fichier(les_presidents.dossier_discours_presidents, nom_doc_pertinent)
+
+    # reperer la phrase contenant le mot-clé et la renvoyer en tant que réponse
+    reponse = sm.trouver_phrase_entourant_mot(texte, mot_specifique, nom_doc_pertinent)
+
+    if reponse =="":
+        mot_specifique_pas_trouve = 1
+        reponse = "Une erreur est survenue: le mot spécifique " + "'" + mot_specifique + "'" + " n'a pas été trouvé dans le texte "
+        if nom_doc_pertinent != "":
+            reponse += " du fichier " + "'" + nom_doc_pertinent + "'"
+        return reponse, mot_specifique_pas_trouve
+
+    return reponse, mot_specifique_pas_trouve
+
+
 def traitement_question_utilisateur(question):
 
     # 1) Nettoyer la question
     question = sm.nettoyer_texte(question)
 
+    # supprimer d'eventuels retour à la ligne parasites en fin de chaine
+    question = question.rstrip()
+
     # 2) creer et initialiser le score à 0 du le vecteur tf_idf_question par copie de la matrice_tf_idf_corpus_transposee.
     # Elle contient uniquement 2 lignes (mots du corpus et score tf-idf de ces mots)
     # et M colonnes (nbre total de mots)
     tf_idf.vecteur_tf_idf_question = tf_idf.ini_matrice_tf_idf_question(tf_idf.matrice_tf_idf_corpus_transposee)
-    # remplir les scores du vecteur_tf_idf_question en fonction des data dispos dans matrice_tf_idf_corpus_transposee
-    tf_idf.vecteur_tf_idf_question = tf_idf.creer_vecteur_tf_idf_question(question, tf_idf.vecteur_tf_idf_question, tf_idf.matrice_tf_idf_corpus_transposee)
 
-    # 3) trouver le doc le plus pertinent à la question posée
+    # remplir les scores du vecteur_tf_idf_question en fonction des data dispos dans matrice_tf_idf_corpus_transposee
+    tf_idf.vecteur_tf_idf_question = tf_idf.creer_vecteur_tf_idf_question(question, tf_idf.vecteur_tf_idf_question,
+                                                                          tf_idf.matrice_tf_idf_corpus_transposee)
+
+    # 3) trouver le num du doc le plus pertinent à la question posée
     num_doc_pertinent = 0
-    num_doc_pertinent = trouver_doc_le_plus_pertinent_a_question(tf_idf.vecteur_tf_idf_question, tf_idf.matrice_tf_idf_corpus_transposee, les_presidents.dico_fichiers_discours_presidents)
+    num_doc_pertinent = trouver_doc_le_plus_pertinent_a_question(tf_idf.vecteur_tf_idf_question,
+                                                                 tf_idf.matrice_tf_idf_corpus_transposee,
+                                                                 les_presidents.dico_fichiers_discours_presidents)
 
     if num_doc_pertinent == 0:
         return "Il n'y a aucun document capable de répondre à votre question."
@@ -179,32 +171,51 @@ def traitement_question_utilisateur(question):
     nom_doc_pertinent = les_presidents.dico_fichiers_discours_presidents[num_doc_pertinent]
 
     # trouver le mot clé avec score tf-idf le plus élevé afin de répondre à la question
-    mot_vecteur_question_avec_score_le_plus_eleve = tf_idf.obtenir_mot_avec_score_tf_idf_le_plus_eleve(tf_idf.vecteur_tf_idf_question)
+    mot_vecteur_question_avec_score_le_plus_eleve = tf_idf.obtenir_mot_avec_score_tf_idf_le_plus_eleve(
+        tf_idf.vecteur_tf_idf_question)
 
     if mot_vecteur_question_avec_score_le_plus_eleve == "":
-        return "Il n'y a aucun document capable de répondre à votre question."
+        return "Il n'y a pas de mot significatif dans votre question, je ne peux pas répondre, désolé."
 
     # rechercher la phrase contenant le mot clé dans le doc pertinent: Elle sera la réponse à la question
-    reponse = generation_reponse_utilisateur(mot_vecteur_question_avec_score_le_plus_eleve, nom_doc_pertinent)
+    reponse, mot_specifique_pas_trouve = generation_reponse_utilisateur_depuis_texte(mot_vecteur_question_avec_score_le_plus_eleve, nom_doc_pertinent)
 
-    if reponse == "":
-        return "Aucun document susceptible de répondre à votre question n'a été trouvé."
+    # ici: mettre un mot ou une phrase de présentation de la réponse
+    # phrase_intro = obtenir_phrase_intro_reponse (dico_phrases_intro)
+    if mot_specifique_pas_trouve == 1:
+        return reponse
 
-    return reponse
+    phrase_intro = tt_quest_rep.obtenir_aleatoirement_phrase_intro_avant_reponse_trouvee()
 
-def generation_reponse_utilisateur(mot_avec_score_tf_idf_le_plus_eleve, nom_doc_pertinent):
+    phrase_intro += "\n\n"
 
-    reponse = ""
-
-    # ouvrir le doc susceptible de contenir la réponse
-    doc = fm.lire_contenu_fichier(les_presidents.dossier_discours_presidents, nom_doc_pertinent)
-
-    # reperer la phrase contenant le mot-clé dans le fichier
+    return phrase_intro + reponse
 
 
-    # selectionner cette phrase et la renvoyer en tant que réponse
+def remplir_dico_intro_avant_reponse_trouvee():
 
+    # clé = num ID unique, valeurs = phrase d'intro
 
-    return reponse
+    dico_intros_avant_reponse_trouvee[1] = "Voici ce que j'ai trouvé: "
+    dico_intros_avant_reponse_trouvee[2] = "Bien sur, il y a ceci: "
+    dico_intros_avant_reponse_trouvee[3] = "En cherchant bien, voici la réponse que j'ai trouvé: "
+    dico_intros_avant_reponse_trouvee[4] = "Voilà ce que l'on peut dire sur le sujet: "
+    dico_intros_avant_reponse_trouvee[5] = "Vous trouverez ci-dessous une réponse murement réfléchie: "
+    dico_intros_avant_reponse_trouvee[6] = "En faisant un gros effort, j'ai trouvé ça: "
+    dico_intros_avant_reponse_trouvee[7] = "J'espère que vous trouverez votre bonheur grâce à cette réponse: "
+    dico_intros_avant_reponse_trouvee[8] = "Et voilà pour vous: "
+    dico_intros_avant_reponse_trouvee[9] = "Il existe cet élément de réponse possible: "
+    dico_intros_avant_reponse_trouvee[10] = "Cela n'a pas été facile, mais j'ai tout de même trouvé ça pour vous: "
 
-#endregion "traitement question utilisateur"
+    return
+
+def obtenir_aleatoirement_phrase_intro_avant_reponse_trouvee():
+
+    nombre_max = len(dico_intros_avant_reponse_trouvee)
+
+    # Générer un nombre entier aléatoire
+    nombre_aleatoire = random.randint(1, nombre_max)
+
+    return dico_intros_avant_reponse_trouvee[nombre_aleatoire]
+
+# endregion "traitement question utilisateur"

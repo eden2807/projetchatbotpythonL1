@@ -2,6 +2,7 @@ import  os
 import string
 import time
 import tkinter as tk
+import re #regular expressions
 def convertir_texte_en_minuscules(fichiers_sources, dossier_destination):
 
     # Convertit les textes des fichiers sources en minuscules et les stocke dans des nouveaux fichiers dans le dossier de destination.
@@ -87,8 +88,49 @@ def charger_contenu_fichier(chemin_fichier, extension = ".txt"):
     with open(os.path.join(chemin_fichier, extension), 'r', encoding='utf-8') as file:
         texte = file.read()
         return texte
-def afficher_texte_progressivement(texte, textbox, delai_entre_lettres=0.02):
+def afficher_texte_progressivement(texte, textbox, delai_entre_lettres=0.02, afficher_tout_apres_x_lettres = -1):
+
+    compteur_lettre = 0
+
     for lettre in texte:
         textbox.insert(tk.END, lettre)
         textbox.update()  # Met à jour l'affichage de la TextBox
+        compteur_lettre += 1
+        if afficher_tout_apres_x_lettres > 0:
+            if compteur_lettre >= afficher_tout_apres_x_lettres:
+                textbox.delete("1.0", tk.END)
+                textbox.insert(tk.END, texte)
+                return
         time.sleep(delai_entre_lettres)
+    return
+def trouver_phrase_entourant_mot(texte, mot_specifique, nom_fichier_texte = ""):
+
+    # Recherche du mot spécifique dans le texte via regex (REgular EXpression
+    match = re.search(r'\b' + re.escape(mot_specifique) + r'\b', texte)
+
+    if match:
+        # Récupération de l'index de début et de fin du mot spécifique
+        debut_mot = match.start()
+        fin_mot = match.end()
+
+        # Recherche de la phrase précédant le mot spécifique (séparée de 2 espaces)
+        debut_phrase = max(texte.rfind('.', 0, debut_mot - 1), 0)
+        fin_phrase = texte.find('.', fin_mot)
+
+        # Si la phrase précédant le mot spécifique n'est pas trouvée, recherche en début de texte
+        if debut_phrase == -1:
+            debut_phrase = 0
+            fin_phrase = texte.find('.', fin_mot)
+
+        # Extrait et renvoie la phrase
+        phrase_entourante = texte[debut_phrase:fin_phrase].strip()
+
+        if phrase_entourante [:2] == ".\n":
+            phrase_entourante = phrase_entourante[2:]
+
+        reponse = "'" + phrase_entourante + "'"
+
+    else:
+        reponse = ""
+
+    return reponse

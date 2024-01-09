@@ -28,7 +28,7 @@ listbox_questions_sur_stats_mots_corpus = tk.Listbox(frame_list_box, font=police
 
 label_info_ou = Label(window, relief=RAISED)
 
-textbox_question = Text(window, width=window_width, height=4, font=30, background="white",
+textbox_question = Text(window, width=window_width, height=4, font=30, wrap='word', background="white",
                         foreground="black")
 
 label_info_reponse = Label(window, relief=RAISED)
@@ -44,7 +44,11 @@ textbox_reponse = Text(window, width=window_width, height=10, font=30, wrap='wor
 #region "Commandes du menu"
 def ini_ui_infos_stats_mots_corpus():
 
-    # ini l'ui
+    # demander si user est ok pour l'effacer
+    reponse = messagebox.showinfo("Information",
+                                     "Veuillez selectionner un des choix disponibles dans la liste")
+
+    textbox_question.delete("1.0", tk.END)
     textbox_reponse.delete("1.0", tk.END)
 
     return
@@ -60,6 +64,7 @@ def ini_ui_pour_poser_question():
 
         if reponse == 'yes':
             textbox_question.delete("1.0", tk.END)
+            textbox_reponse.delete("1.0", tk.END)
 
     # selectionner la texbox (donner le focus afin d'être prêt à saisir la new question)
     textbox_question.focus_set()
@@ -72,17 +77,17 @@ def quitter():
 
 def traitement_question_sur_stat_mots_corpus(num_question):
 
+    reponse_complete = ""
+
     # effacer le contenu de la textbox reponse
-    ini_ui_infos_stats_mots_corpus()
+    textbox_reponse.delete("1.0", tk.END)
 
     # obtenir la réponse selon la question selectionnée par l'utilisateur
-    reponse = tt_quest_rep.obtenir_reponse_question_sur_stats_mots_corpus(num_question)
+    reponse = tt_quest_rep.obtenir_reponse_sur_stats_mots_corpus(num_question)
 
-    # afficher la réponse progressivement, façon chatGPT
-    if num_question == 1:
-        sm.afficher_texte_progressivement(reponse, textbox_reponse)
-    elif num_question == 2:
-        sm.afficher_texte_progressivement(reponse, textbox_reponse, 0.001)
+    # afficher la réponse progressivement, façon chatGPT, + ou - vite selon le type de question posée
+    if num_question == 2 or num_question == 3:
+        sm.afficher_texte_progressivement(reponse, textbox_reponse, 0.02, 150)
     else:
         sm.afficher_texte_progressivement(reponse, textbox_reponse)
 
@@ -104,33 +109,33 @@ def on_listbox_questions_sur_stats_mots_corpus_click(event):
     traitement_question_sur_stat_mots_corpus(num_question)
 
     return
-def traitement_question_utilisateur(question):
-
-    # effacer la réponse précédente
-    textbox_reponse.delete("1.0", tk.END)
+def traitement_question_utilisateur_et_affichage_reponse(question):
 
     # chercher la réponse à la question de l'utilisateur
     reponse = tt_quest_rep.traitement_question_utilisateur(question)
 
     # afficher la réponse façon chatGPT:
-    sm.afficher_texte_progressivement(reponse, textbox_reponse, 0.001)
+    sm.afficher_texte_progressivement(reponse, textbox_reponse)
 
     return
 def on_textbox_question_enter_pressed(event):
 
     question = textbox_question.get("1.0", "end-1c")
 
-    traitement_question_utilisateur(question)
+    # la question ne contient pas de caracteres alphanumérique, avertir l'utilisateur
+    if len(question.strip()) == 0:
+        messagebox.showinfo("Information", "La question n'a pas été correctement saisie")
+        return
+
+    # effacer la réponse précédente
+    textbox_reponse.delete("1.0", tk.END)
+
+    # traiter la question de l'utilisateur et renvoyer la réponse
+    traitement_question_utilisateur_et_affichage_reponse(question)
 
     return
-def getText(textbox):
 
-    # recuperer le contenu d'une textbox
-    texte = textbox.get("1.0", "end")
 
-    return texte
-
-    return
 def creer_ui():
 
     window.config(background="peachpuff")
@@ -145,6 +150,7 @@ def creer_ui():
 
     # Création des sous menus :
     #menuFichier.add_command(label="Infos et stats sur les discours", command=ini_ui_infos_stats_mots_corpus)
+    menuFichier.add_command(label="Choisir une question pré-établie", command=ini_ui_infos_stats_mots_corpus)
     menuFichier.add_command(label="Poser une question", command=ini_ui_pour_poser_question)
     menuFichier.add_command(label="Quitter", command=quitter)
     # Configuration de la barre des menus
@@ -226,6 +232,11 @@ def creer_ui():
 
 def main():
 
+    tf_idf.ini += 1
+
+    if tf_idf.ini == 2:
+        return
+
     # obtenir les fichiers des discours des presidents
     les_presidents.liste_noms_fichiers_discours_presidents = les_presidents.obtenir_nom_fichiers_discours_presidents(les_presidents.dossier_discours_presidents)
 
@@ -261,8 +272,13 @@ def main():
     # Colonnes = mots (unique) du corpus
     tf_idf.matrice_tf_idf_corpus_transposee = tf_idf.transpose_matrice(tf_idf.matrice_tf_idf_corpus)
 
+    # remplir les phrases d'intro que l'on mettra avant de livrer les réponses aux utilisateurs
+    tt_quest_rep.remplir_dico_intro_avant_reponse_trouvee()
+
     # note importante: toujours creer l'ui à la fin du process car des que la boucle de window est créée
-    # on sort de celui ci et le reste du code situé après la création de l'ui n'est plus executé
+    # on sort de celui-ci et le reste du code situé après la création de l'ui n'est plus executé
     creer_ui()
+
+    return
 
 main()
