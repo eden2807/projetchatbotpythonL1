@@ -185,7 +185,7 @@ def creer_ui():
     listbox_questions_sur_stats_mots_corpus.insert(2, "Afficher les mots les PLUS importants dans les discours des présidents")
     listbox_questions_sur_stats_mots_corpus.insert(3, "Trouver les mots significatifs les plus répétés par J. Chirac")
     listbox_questions_sur_stats_mots_corpus.insert(4, "Indiquer le nom des présidents ayant parlés de la Nation ainsi que celui qui en a le plus parlé")
-    listbox_questions_sur_stats_mots_corpus.insert(5, "Montrer qui a parlé du climat et/ou de l'écologie")
+    listbox_questions_sur_stats_mots_corpus.insert(5, "Montrer quel président a parlé du climat et/ou de l'écologie")
     listbox_questions_sur_stats_mots_corpus.bind("<ButtonRelease-1>", on_listbox_questions_sur_stats_mots_corpus_click)
 
     # Création de la barre de défilement de la listbox
@@ -248,12 +248,12 @@ def main():
     # obtenir le nom et le prénom des présidents
     prenom_nom_des_presidents = les_presidents.obtenir_liste_prenom_nom_des_presidents(les_presidents.liste_noms_fichiers_discours_presidents)
 
-    # Convertir les fichiers des discours des présidents en minuscules et les stocker dans le dossier "cleaned"
+    # convertir les fichiers des discours des présidents en minuscules et les stocker dans le dossier "cleaned"
     sm.convertir_texte_en_minuscules(les_presidents.liste_noms_fichiers_discours_presidents, les_presidents.dossier_discours_presidents_nettoyes)
-    # Nettoyer les fichiers des discours des présidents
+    # nettoyer les fichiers des discours des présidents
     sm.nettoyer_textes_du_dossier(les_presidents.dossier_discours_presidents_nettoyes)
 
-    # Obtenir les dicos d'occurrences de mots des discours des présidents
+    # obtenir les dicos d'occurrences de mots des discours des présidents
     tf_idf.les_dicos_occurrences_mots_corpus = tf_idf.creer_tous_les_dicos_occurrences_mots(les_presidents.dossier_discours_presidents_nettoyes)
 
     # créer matrice TF d'après les dicos créés précedemment

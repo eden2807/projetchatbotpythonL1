@@ -61,20 +61,91 @@ def obtenir_les_mots_importants_les_plus_employes_par_un_president(nom_president
 
     return reponse_complete
 
-def obtenir_presidents_ayant_prononce_un_terme(liste_termes, les_dicos_occurrences_mots_corpus):
-    # parcourir tous les dicos de tous les présidents et, pour chacun, noter le nombre de fois que le terme
-    # passé en param apparait
-    return
 
-def obtenir_le_president_ayant_le_plus_prononce_un_terme(terme, les_dicos_occurrences_mots_corpus):
+def obtenir_le_president_ayant_le_plus_prononce_un_mot(mot, les_dicos_occurrences_mots_corpus):
 
-    return
+    reponse = ""
+    reponse_complete = ""
+
+    # clé = nom du président, valeurs = nb de fois ou le mot a été prononcé
+    dico_presidents_et_nb_mots_prononces = {}
+
+    # rechercher tous les présidents ayant prononcé ce terme
+    dico_presidents_et_nb_mots_prononces = les_presidents.obtenir_presidents_ayant_prononce_un_terme(mot, les_dicos_occurrences_mots_corpus)
+
+    # ordonner le résultat en fonction du nombre de prononciation du terme, du plus grand au plus petit
+    # Note: pour inverser l'ordre de tri, il suffit d'ajouter reverse=True:
+    liste_items_tries_presidents_et_nb_mots_prononces = sorted(dico_presidents_et_nb_mots_prononces.items(), key=lambda x: x[1], reverse=True)
+
+    # retourner le nom des présidents ayant prononcé le terme (plusieurs peuvent l'avoir prononcé un même nb de fois)
+    # boucle sur la liste jusqu'à ce que le président suivant ait un score de prononciation moins élevé
+    presidents_et_nb_mots_prononces_plus_eleve = ""
+    prev_score_le_plus_eleve = 0
+
+    for i in range(len(liste_items_tries_presidents_et_nb_mots_prononces)):
+
+        presidents_et_nb_mots_prononces_plus_eleve = liste_items_tries_presidents_et_nb_mots_prononces[i]
+
+        nom_president = presidents_et_nb_mots_prononces_plus_eleve[0]
+        nb_repetition_mot = presidents_et_nb_mots_prononces_plus_eleve[1]
+
+        if i == 0:
+            # au premier passage, le score est forcément le plus élevé
+            reponse = "Le président " + nom_president + " est celui qui a répété le mot " + "'" + mot + "'" + " le plus grand nombre de fois avec "  + str(nb_repetition_mot) + " évocations."
+
+        if i == 1:
+            reponse += "\n\n" + "Les autres présidents ayant prononcé le mot " + "'" + mot + "'" + " sont: "
+            reponse += "\n\n" + "Le président " + nom_president + " qui l'a évoqué " + str(nb_repetition_mot) + " fois."
+
+        elif i > 1:
+            reponse += "\n" + "Le président " + nom_president + " qui l'a évoqué " + str(nb_repetition_mot) + " fois."
+
+    if reponse == "":
+        reponse = "Aucun président n'a prononcé le mot " + mot + " dans les discours disponibles"
+        return reponse
+
+    phrase_intro = tt_quest_rep.obtenir_aleatoirement_phrase_intro_avant_reponse_trouvee()
+    reponse_complete = phrase_intro + "\n\n" + reponse + "\n"
+
+    return reponse_complete
+
+def obtenir_presidents_ayant_prononce_un_mot(liste_mots, les_dicos_occurrences_mots_corpus):
+
+    # clé = nom du président, valeurs = nb de fois ou le mot a été prononcé
+    dico_presidents_et_nb_mots_prononces = {}
+    reponse = ""
+    reponse_complete = ""
+    mot = ""
+
+    for i in range(len(liste_mots)):
+
+        mot = liste_mots[i]
+
+        # rechercher tous les présidents ayant prononcé ce terme
+        dico_presidents_et_nb_mots_prononces = les_presidents.obtenir_presidents_ayant_prononce_un_terme(mot, les_dicos_occurrences_mots_corpus)
+
+        # retourner le nom des présidents ayant prononcé le mot
+        for cle, val in dico_presidents_et_nb_mots_prononces.items():
+            reponse += "Le président " + cle + " a évoqué le mot " + "'" + mot + "'" + " " + str(val) + " fois."
+
+        dico_presidents_et_nb_mots_prononces.clear()
+
+
+    if reponse == "":
+        reponse = "Aucun président n'a prononcé le mot " + mot + " dans les discours disponibles"
+        return reponse
+
+    phrase_intro = tt_quest_rep.obtenir_aleatoirement_phrase_intro_avant_reponse_trouvee()
+    reponse_complete = phrase_intro + "\n\n" + reponse + "\n"
+
+    return reponse_complete
+
 
 def obtenir_reponse_sur_stats_mots_corpus(num_question):
 
     reponse = ""
 
-    liste_termes = ["climat", "ecologie", "écologie"]
+    liste_mots = ["climat", "ecologie", "écologie"]
 
     if num_question == 1:
         reponse = obtenir_les_mots_les_moins_importants_des_discours_des_presidents()
@@ -84,9 +155,9 @@ def obtenir_reponse_sur_stats_mots_corpus(num_question):
         # Trouver les mots significatifs les plus répétés par J. Chirac
         reponse = obtenir_les_mots_importants_les_plus_employes_par_un_president("chirac", tf_idf.les_dicos_occurrences_mots_corpus, 50)
     elif num_question == 4:
-        reponse = obtenir_le_president_ayant_le_plus_prononce_un_terme("nation", tf_idf.les_dicos_occurrences_mots_corpus)
+        reponse = obtenir_le_president_ayant_le_plus_prononce_un_mot("nation", tf_idf.les_dicos_occurrences_mots_corpus)
     elif num_question == 5:
-        reponse = obtenir_presidents_ayant_prononce_un_terme(liste_termes, tf_idf.les_dicos_occurrences_mots_corpus)
+        reponse = obtenir_presidents_ayant_prononce_un_mot(liste_mots, tf_idf.les_dicos_occurrences_mots_corpus)
     else:
         messagebox.showinfo("Information","Cette fonctionnalité n'est pas encore implémentée")
 
@@ -135,7 +206,7 @@ def generation_reponse_utilisateur_depuis_texte(mot_specifique, nom_doc_pertinen
         mot_specifique_pas_trouve = 1
         reponse = "Une erreur est survenue: le mot spécifique " + "'" + mot_specifique + "'" + " n'a pas été trouvé dans le texte "
         if nom_doc_pertinent != "":
-            reponse += " du fichier " + "'" + nom_doc_pertinent + "'"
+            reponse += " du fichier " + "'" + nom_doc_pertinent + "'" + " qui est pourtant le doc le plus pertinent pour répondre à cette question."
         return reponse, mot_specifique_pas_trouve
 
     return reponse, mot_specifique_pas_trouve

@@ -31,6 +31,7 @@ def creer_liste_prenom_nom_formates(noms_des_presidents):
 
     return liste_prenom_nom_formates
 def extraire_nom_president(nom_fichier):
+
     nom_fichier = nom_fichier.replace("Nomination_", "").replace(".txt", "")
 
     # Utilisons la fonction rfind pour trouver la dernière occurrence de "("
@@ -294,6 +295,37 @@ def obtenir_les_mots_importants_les_plus_employes_par_un_president(nom_president
     res = res[:-5]
 
     return "Liste des mots importants les plus utilisés par le président " + nom_president + ":" + "\n\n" + res
+
+
+def obtenir_presidents_ayant_prononce_un_terme(mot, les_dicos_occurrences_mots_corpus):
+
+    # stocker le res. clé = nom du président, valeurs = nb de fois ou le mot a été prononcé
+    dico_presidents_et_nb_prononciation_mot = {}
+
+    nom_president = ""
+
+    # parcourir tous les dicos de tous les présidents et, pour chacun d'entre eux, noter le
+    # nombre de fois que le terme passé en param apparait
+    # parcourir le dico des dicos occurrences mots corpus de chaque président
+    for nom_fichier_discours_presidents, dico_occurrences_mot in les_dicos_occurrences_mots_corpus.items():
+
+        # extraire le nom du président du nom du fichier ayant servi à la création du dico d'occurrence de mots
+        nom_president = extraire_nom_president(nom_fichier_discours_presidents)
+
+        # le président courant a-t-il déjà prononcé ce mot ? Si oui, connaitre le nombre de fois qu'il l'a fait dans ce discours
+        if dico_occurrences_mot.get(mot):
+
+            nb_occurrences_mot = dico_occurrences_mot[mot]
+
+            # ajouter le nb d'occurrences de ce mot pour le président courant
+            if dico_presidents_et_nb_prononciation_mot.get(nom_president):
+                # si ce président a déjà prononcé ce mot dans un autre discours, additionner au nb existant
+                dico_presidents_et_nb_prononciation_mot[nom_president] += nb_occurrences_mot
+            else:
+                # sinon créer la nouvelle entrée
+                dico_presidents_et_nb_prononciation_mot[nom_president] = nb_occurrences_mot
+
+    return dico_presidents_et_nb_prononciation_mot
 
 
 def creer_dicos_stats_sur_mot_employe_par_les_presidents(mot_a_trouver, les_dicos_occurrences_mots_corpus, liste_nom_des_presidents):
